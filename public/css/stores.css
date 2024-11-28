@@ -1,0 +1,50 @@
+.sidebar {
+    background-color: #f8f9fa;
+    padding: 20px;
+    height: 100%;
+}
+.map-container {
+    height: 500px;
+    border: 1px solid #ddd;
+}
+a {
+    text-decoration: none;
+}
+
+/* Hiệu ứng hover cho thẻ a */
+a:hover {
+    color: #0056b3; /* Màu khi hover (có thể thay đổi theo ý bạn) */
+    text-decoration: underline;
+}
+/* Đặt chiều cao cố định và cuộn dọc cho danh sách cửa hàng */
+.list-group {
+    max-height: 400px; /* Chiều cao tối đa của danh sách */
+    overflow-y: auto; /* Kích hoạt cuộn dọc khi danh sách vượt quá chiều cao */
+}
+
+/* Tùy chỉnh thanh cuộn */
+.list-group::-webkit-scrollbar {
+    width: 8px; /* Độ rộng thanh cuộn */
+}
+
+.list-group::-webkit-scrollbar-thumb {
+    background-color: #888; /* Màu của thanh cuộn */
+    border-radius: 4px; /* Bo tròn góc của thanh cuộn */
+}
+
+.list-group::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Màu khi hover lên thanh cuộn */
+}
+
+/* Hiệu ứng hover cho các cửa hàng */
+.list-group-item:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover */
+    cursor: pointer;
+}
+#home {
+    color: black;
+    text-decoration: none ;
+}
+.list-unstyled .ul .li{
+    color: black;
+}

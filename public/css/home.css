@@ -1,0 +1,256 @@
+
+    .card-body {
+        text-align: center;
+        padding: 10px;
+
+    }
+
+
+    .category-card {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        color: #070707;
+        margin: 5px; /* Đảm bảo các danh mục không có margin riêng */
+        font-family: 'Times New Roman', Times, serif; /* Đặt kiểu chữ là Times New Roman */
+        font-size: 14px; /* Điều chỉnh cỡ chữ nhỏ lại */
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(233, 231, 231, 0.3);
+    }
+    .card-title {
+        font-size: 15px; /* Bạn có thể điều chỉnh cỡ chữ cho tiêu đề nếu muốn */
+    }
+    .card-img-top {
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+    }
+    /* Đặt màu nền cho từng danh mục */
+    .category-1 { background-color: #f7c2ca; }
+    .category-2 { background-color: #b2e6fb; }
+    .category-3 { background-color: #b1fab1; }
+    .category-4 { background-color: #f9edaa; }
+    .category-5 { background-color: #feaed6; }
+    .category-6 { background-color: #AFEEEE; }
+    .category-7 { background-color: #f9bdf9; }
+    .category-8 { background-color: #fbbfa7; }
+
+    .col-md-2 {
+        flex: 0 0 20%; /* Đảm bảo cột chiếm 20% chiều rộng */
+        max-width: 20%; /* Đặt chiều rộng tối đa cho cột */
+    }
+    #danhmuc {
+        background-color: rgb(255, 255, 255);
+        border-radius: 15px;
+    }
+    #danhmuc h1{
+        font-size: 20px;
+        color: #f38999;
+    }
+    /* Kiểu CSS cho cả danh mục và thương hiệu */
+/* CSS chỉ cho phần thương hiệu */
+#thuonghieu h1 {
+    font-size: 2rem;
+    color: #f38999;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+#thuonghieu {
+    background-color: white;
+    border-radius: 15px;
+    font-size: 25px;
+    width: 1150px;
+
+}
+.brand-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    margin: 10px;
+    width: 150px; /* Điều chỉnh độ rộng cho các card thương hiệu */
+    display: inline-block; /* Hiển thị các card theo hàng ngang */
+    vertical-align: top; /* Giữ các card thẳng hàng trên cùng */
+}
+
+.brand-card img {
+    width: 100%;
+    height: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.brand-card:hover {
+    transform: translateY(-5px);
+}
+
+.brand-card .card-body {
+    text-align: center;
+    background-color: #f38999;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.brand-card .card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+}
+#next,
+#previous {
+    background-color: black; /* Đặt màu nền là đen */
+    border-radius: 50%; /* Bo tròn biểu tượng */
+    width: 30px;
+    height: 30px;
+}
+/* Sale and icons section styling */
+.icon-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    height: 140px;
+}
+
+.icon-section .icon-item {
+    flex: 1 1 15%;
+    max-width: 15%;
+    padding: 1rem;
+}
+
+.icon-section img {
+    max-width: 60px;
+    height: auto;
+    margin-bottom: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.icon-section img:hover {
+    transform: scale(1.1);
+}
+
+.icon-section p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.icon-section .icon-item:hover p {
+    color: #007bff;
+}
+.slide {
+    background-color: white;
+    border-radius: 15px;
+}
+.container {
+    margin-top: 2rem;
+}
+
+.image-sale {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem; /* Spacing between images */
+    align-items: center;
+}
+
+.image-sale .col-md-4 {
+    flex: 1;
+    text-align: center;
+}
+
+.image-sale img {
+    width: 100%; /* Makes each image responsive within its container */
+    max-width: 100%; /* Ensures the image fills the container */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-sale img:hover {
+    transform: scale(1.03); /* Slight zoom on hover */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Shadow intensifies on hover */
+}
+
+#ban-chay h5 {
+    font-size: 2rem;
+    color: #f38999;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    height: 180px;
+    object-fit: cover;
+}
+
+.sold-count {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: 0.5rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.6);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.cart-title {
+    font-size: 30px;
+    margin-left: 0.5rem;
+    color: #ffcc00;
+    text-align: center;
+}
+
+.card-body {
+    text-align: left;
+    padding: 1rem;
+}
+
+.new-price {
+    font-size: 1.2rem;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.old-price {
+    font-size: 0.9rem;
+    text-decoration: line-through;
+    color: #888;
+}
+
+.stars {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.stars .fa-star {
+    color: #ffc107;
+}
+
+

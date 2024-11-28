@@ -1,0 +1,107 @@
+/* Thẻ sản phẩm */
+.card {
+    position: relative; /* Để đảm bảo các phần tử con có vị trí tuyệt đối */
+    border: none;
+    transition: transform 0.3s;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Hình ảnh sản phẩm */
+.card-img-top {
+    border-radius: 10px 10px 0 0;
+    object-fit: cover;
+    height: 200px;
+}
+
+/* Nhãn giảm giá */
+.discount-tag {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #e74c3c;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #f684b9;
+    padding: 3px 8px;
+    border-radius: 5px;
+    z-index: 10; /* Đảm bảo nhãn ở trên ảnh */
+}
+
+/* Tên sản phẩm */
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Giá sản phẩm */
+.card-text {
+    font-size: 1rem;
+    color: #e74c3c;
+}
+
+/* Giá cũ */
+.card-text.line-through {
+    color: #999;
+    font-size: 0.9rem;
+}
+
+/* Xếp hạng */
+.stars {
+    color: gold;
+}
+
+.fa-star {
+    font-size: 1.25rem;
+}
+
+.checked {
+    color: gold;
+}
+
+/* Nút */
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+/* Điều chỉnh nút điều hướng carousel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: black;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+
+/* CSS cho Carousel */
+.carousel-inner {
+    border-radius: 15px;
+    background-color: white;
+}
+
+.carousel-item .card {
+    border: none;
+    border-radius: 15px;
+}
+
+.stars {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.text-muted {
+    margin-left: 5px;
+    font-size: 0.9rem;
+}

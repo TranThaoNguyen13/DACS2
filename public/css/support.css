@@ -1,0 +1,77 @@
+/* a {
+    text-decoration:none ;
+    color: black;
+}
+a:hover {
+    color: pink;
+    text-decoration: none;
+} */
+.container-fluid{
+    border-radius: 15px;
+   height: 100px;
+}
+/* General container styling */
+.container-fluid {
+    margin-bottom: 2rem;
+}
+
+/* Styling the navigation link */
+nav a#home {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+nav a#home:hover {
+    text-decoration: underline;
+}
+
+/* Styling icons and links */
+.col-md-2 a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.col-md-2 a img {
+    max-width: 60px;
+    height: auto;
+    margin-bottom: 0.5rem;
+}
+
+.col-md-2 a:hover {
+    color: #007bff;
+}
+
+/* Question and info sections */
+h5 {
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+}
+
+ul li a:hover {
+    color: #007bff;
+    text-decoration: none;
+    
+}
+

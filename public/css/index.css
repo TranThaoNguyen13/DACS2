@@ -1,0 +1,76 @@
+.card {
+    height: 500px; /* Đặt chiều cao cố định cho mỗi card */
+    width: 100%; /* Đảm bảo khung card rộng đầy đủ */
+    position: relative; /* Để sử dụng position absolute cho discount tag */
+    overflow: hidden; /* Giúp các phần bên ngoài không bị tràn ra ngoài khung */
+    background-color: white;
+}
+
+.discount-tag {
+    position: absolute;
+    top: 10px; /* Điều chỉnh vị trí từ trên xuống */
+    right: 10px; /* Điều chỉnh vị trí từ bên phải vào */
+    font-size: 1.2rem; /* Kích thước chữ */
+    font-weight: bold; /* Đậm chữ */
+    z-index: 10; /* Đảm bảo phần trăm nằm trên hình ảnh */
+}
+
+.stars {
+    color: gold; /* Đặt màu vàng cho ngôi sao */
+}
+
+.fa-star {
+    font-size: 1.25rem; /* Kích thước ngôi sao */
+}
+
+.checked {
+    color: gold; /* Đảm bảo màu vàng cho ngôi sao đã chọn */
+}
+
+#dssp {
+    background-color: white;
+    border-radius: 15px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    font-size: 1.2rem;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ced4da;
+}
+
+.quantity-control .btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+.quantity-control .quantity {
+    width: 50px;
+    text-align: center;
+}

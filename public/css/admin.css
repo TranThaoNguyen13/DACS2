@@ -1,0 +1,39 @@
+/* admin.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Header */
+header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar .nav-link {
+    font-size: 1rem;
+    padding: 10px 15px;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link.active, .sidebar .nav-link:hover {
+    background-color: pink;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+/* Main Content */
+main {
+    margin-left: 18%;
+    margin-top: 20px;
+}
