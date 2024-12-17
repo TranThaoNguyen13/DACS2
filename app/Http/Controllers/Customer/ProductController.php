@@ -3,6 +3,9 @@ namespace App\Http\Controllers\Customer;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Comment;
+use Illuminate\Http\Request;
+
 // use Illuminate\Support\Facades\Log;
 use App\Models\Brand;
 
@@ -91,6 +94,20 @@ public function showByBrand($brandId)
 
     // Trả về view với danh sách sản phẩm của thương hiệu
     return view('products.brand', compact('products'));
+}
+public function addComment(Request $request, $productId)
+{
+    $request->validate([
+        'content' => 'required|max:500',
+    ]);
+
+    Comment::create([
+        'product_id' => $productId,
+        'user_id' => auth()->id(),
+        'content' => $request->content,
+    ]);
+
+    return redirect()->back()->with('success', 'Bình luận của bạn đã được thêm!');
 }
 
 

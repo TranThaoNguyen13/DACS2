@@ -91,6 +91,7 @@ public function processPayment(Request $request, Order $order)
         'phone' => 'required|string|max:15',
         'email' => 'required|email|max:255',
         'username' => 'required|string|max:255',
+        'payment_method' => 'required|string|max:255',
     ]);
 
     // Cập nhật thông tin thanh toán cho đơn hàng
@@ -98,7 +99,9 @@ public function processPayment(Request $request, Order $order)
     $order->phone = $request->input('phone');
     $order->email = $request->input('email');
     $order->username = $request->input('username');
-    $order->status = 'paid'; // Đặt trạng thái đã thanh toán
+    $order->payment_method = $request->input('payment_method');
+    $order->status = 'chờ xác nhận'; // Đặt trạng thái đã thanh toán
+
 
     // Lưu lại thông tin thanh toán
     $order->save();
@@ -146,7 +149,7 @@ public function store(Request $request)
     $order = new Order();
     $order->user_id = auth()->user()->id;
     $order->total = $totalPrice;
-    $order->status = 'pending';
+    $order->status = 'chờ xác nhần';
     $order->username = $validated['username'];
     $order->email = $validated['email'];
     $order->phone = $validated['phone'];
@@ -185,7 +188,19 @@ public function showOrderHistory()
     return view('order_history', compact('orders'));
 }
 
+public function history(Request $request)
+    {
+        $status = $request->get('status', 'all'); // Lấy trạng thái từ query string, mặc định là 'all'
 
+        // Lọc đơn hàng dựa trên trạng thái
+        if ($status === 'all') {
+            $orders = Order::all(); // Hiển thị tất cả đơn hàng
+        } else {
+            $orders = Order::where('status', $status)->get();
+        }
+
+        return view('orders.history', compact('orders', 'status'));
+    }
 
 public function buyNow(Request $request)
 {

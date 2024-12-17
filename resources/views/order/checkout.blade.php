@@ -47,7 +47,13 @@
                     <input type="email" name="email" class="form-control" required>
                 </div>
 
-                
+                <div class="mb3">
+                    <label for="payment_method">Phương thức thanh toán</label>
+                        <select class="form-control" name="payment_method" id="payment_method" required>
+                            <option value="card">Thanh toán qua MoMo</option>
+                            <option value="cod">Thanh toán khi nhận hàng</option>
+                        </select>
+                    </div><br>
 
                 <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
                 <button onclick="window.history.back()" class="btn btn-secondary">Quay lại</button>

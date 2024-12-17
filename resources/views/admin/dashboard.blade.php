@@ -59,6 +59,24 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4 mt-3">
+            <div class="card text-center">
+                 <div class="card-body">
+                     <h5 class="card-title">Quản Lý Bình Luận</h5>
+                    <p class="card-text">Duyệt và trả lời các bình luận của người dùng.</p>
+                    <a href="{{ route('admin.comments.index') }}" class="btn btn-primary">Quản Lý Bình Luận</a>
+                 </div>
+            </div>
+        </div>
+        <div class="col-md-4 mt-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Xem Báo Cáo Doanh Thu</h5>
+                    <p class="card-text">Xem tổng doanh thu của cửa hàng.</p>
+                    <a href="{{ route('admin.reports.index') }}" class="btn btn-primary">Xem Báo Cáo</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

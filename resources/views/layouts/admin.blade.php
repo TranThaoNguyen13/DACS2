@@ -8,6 +8,8 @@
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -61,7 +63,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.nhanvien.index') }}">Quản Lý Nhân Viên</a>
                     </li>
-                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.comments.index') }}">Quản Lý Bình Luận</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.reports.index') }}">Xem Báo Cáo Doanh Thu</a>
+                    </li>
                 </ul>
             </nav>
 

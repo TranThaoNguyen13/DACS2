@@ -45,6 +45,65 @@
 
             </div>
         </div>
+        <div class="mt-5">
+    <h4>Bình luận</h4>
+
+    <!-- Hiển thị danh sách bình luận -->
+    @if($product->comments->count() > 0)
+        @foreach($product->comments as $comment)
+            <div class="border-bottom mb-3 pb-2 comment-item">
+                <p class="comment-user"><strong>{{ $comment->user->username }}</strong></p>
+                <p class="comment-content">{{ $comment->content }}</p>
+                <p class="comment-time text-muted">{{ $comment->created_at->diffForHumans() }}</p>
+
+                <!-- Hiển thị các câu trả lời của admin -->
+                @foreach($comment->replies as $reply)
+                    <div class="ml-4 border-top pt-2">
+                        <p><strong>Admin:</strong> <span class="text-muted">{{ $reply->created_at->diffForHumans() }}</span></p>
+                        <p>{{ $reply->content }}</p>
+                    </div>
+                @endforeach
+
+                <!-- Form trả lời bình luận (dành cho admin) -->
+                @auth
+                    @if(auth()->user()->role === 'admin') <!-- Kiểm tra nếu là admin -->
+                        <form action="{{ route('comment.reply', $comment->id) }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <textarea name="content" class="form-control" rows="3" placeholder="Trả lời bình luận..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Gửi</button>
+                        </form>
+                    @endif
+                    @if($comment->reply)
+                <div class="admin-reply mt-3">
+                    <strong>Admin trả lời:</strong>
+                    <p>{{ $comment->reply }}</p>
+                </div>
+            @endif
+                @endauth
+            </div>
+        @endforeach
+    @else
+        <p>Chưa có bình luận nào.</p>
+    @endif
+
+    <!-- Form thêm bình luận mới -->
+    @auth
+        <form action="{{ route('product.comment', $product->id) }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <textarea name="content" class="form-control" rows="3" placeholder="Viết bình luận..."></textarea>
+            
+            <button type="submit" class="btn btn-primary mt-2">Gửi</button>
+            </div>
+        </form>
+    @else
+        <p><a href="{{ route('login') }}">Đăng nhập</a> để bình luận.</p>
+    @endauth
+</div>
+
+
     </div>
      <!-- Sản phẩm liên quan: Carousel -->
  <div id="categoryCarousel" class="carousel slide mt-5" data-ride="carousel" style="background-color: white; border-radius: 15px; height: auto;">

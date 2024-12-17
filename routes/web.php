@@ -346,3 +346,23 @@ Route::post('/cart/update', [CartController::class, 'update'])->name('cart.updat
 
 Route::get('/password/change', [UserController::class, 'showChangePasswordForm'])->name('password.change');
 Route::post('/password/change', [UserController::class, 'changePassword'])->name('password.update');
+use App\Http\Controllers\Customer\ProductController as CustomerProductController;
+Route::post('/products/{product}/comments', [CustomerProductController::class, 'addComment'])->name('product.comment');
+
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('comments', AdminCommentController::class);
+});
+Route::post('/comment/{comment}/reply', [AdminCommentController::class, 'replyComment'])->name('comment.reply');
+// routes/web.php
+
+Route::delete('admin/comments/{id}', [AdminCommentController::class, 'destroy'])->name('admin.comments.destroy');
+// routes/web.php
+// routes/web.php
+
+use App\Http\Controllers\Admin\ReportController;
+
+Route::get('admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+
+
+

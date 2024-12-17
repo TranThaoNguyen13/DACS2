@@ -64,7 +64,7 @@
     <div class="form-group">
         <label for="payment_method">Phương thức thanh toán</label>
         <select class="form-control" name="payment_method" id="payment_method" required>
-            <option value="card">Thanh toán qua thẻ</option>
+            <option value="card">Thanh toán qua MoMo</option>
             <option value="cod">Thanh toán khi nhận hàng</option>
         </select>
     </div>

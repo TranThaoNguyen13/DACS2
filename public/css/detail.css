@@ -155,3 +155,165 @@ button.btn {
     flex: none; /* Đảm bảo các nút có kích thước theo nội dung và không bị giãn */
     margin: 0; /* Loại bỏ bất kỳ khoảng cách mặc định nào */
 }
+
+/* Phong cách tổng quát */
+.mt-5 {
+    margin: 2rem auto !important; /* Căn giữa theo chiều ngang */
+    width: 1180px;
+    max-width: 95%; /* Đáp ứng màn hình nhỏ hơn */
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive cho .mt-5 */
+@media (max-width: 768px) {
+    .mt-5 {
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 1.5rem;
+        padding: 15px;
+    }
+}
+
+h4 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Phong cách danh sách bình luận */
+.border-bottom {
+    border-bottom: 1px solid #ddd !important;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.border-bottom p {
+    margin: 0 0 10px;
+}
+
+.border-bottom strong {
+    color: #007bff;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Phong cách form bình luận */
+form {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa textarea và nút gửi */
+    flex-wrap: wrap;
+}
+
+/* Phong cách textarea */
+.form-group {
+    display: flex;
+    align-items: flex-start; /* Căn nút gửi cùng hàng với textarea */
+    gap: 10px; /* Khoảng cách giữa textarea và nút */
+}
+
+textarea {
+    flex: 1; /* Để textarea chiếm toàn bộ không gian còn lại */
+    resize: none;
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    width: auto; /* Để Flexbox kiểm soát chiều rộng */
+    min-height: 40px; /* Chiều cao tối thiểu */
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    white-space: nowrap; /* Ngăn nút xuống dòng */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Phong cách nút gửi */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Phong cách thông báo khi không có bình luận */
+p {
+    font-size: 14px;
+    color: #555;
+}
+
+p a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* Phong cách danh sách bình luận */
+.comment-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.comment-user {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.comment-content {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+    line-height: 1.5;
+}
+
+.comment-time {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Tăng hiệu ứng hover */
+.comment-item:hover {
+    background-color: #f9f9f9;
+    border-left: 3px solid #007bff;
+    padding-left: 10px;
+}

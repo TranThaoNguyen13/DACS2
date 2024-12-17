@@ -28,4 +28,9 @@ class Product extends Model
         return $this->belongsToMany(Order::class, 'order_product')
                     ->withPivot('quantity', 'price'); // Thêm các cột trung gian nếu cần
     }
+    public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
+
 }
