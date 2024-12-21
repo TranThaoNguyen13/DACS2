@@ -20,5 +20,10 @@ class ClinicSpaController extends Controller
     // Pass $clinicSpas to the view
     return view('customer.home', compact('clinicSpas'));
 }
+public function show($id)
+{
+    $clinicSpa = ClinicSpa::findOrFail($id); // Lấy thông tin của Clinic & Spa
+    return view('clinicSpa.show', compact('clinicSpa'));
+}
 
 }

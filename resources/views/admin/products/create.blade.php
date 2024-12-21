@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.admin')
 
-    <title>Thêm sản phẩm mới</title>
-</head>
+@section('content')
 <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-<body>
+
     <h1>Thêm sản phẩm mới</h1>
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -60,5 +55,4 @@
 
         <button type="submit">Thêm sản phẩm</button>
     </form>
-</body>
-</html>
+    @endsection

@@ -2,12 +2,22 @@
 
 @section('title', 'Quản lý người dùng')
 
+<style>
+    .table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa; /* Màu nền của tiêu đề */
+    z-index: 1;
+}
+
+</style>
 @section('content')
 <div class="container">
     <h1>Quản lý người dùng</h1>
     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Thêm người dùng mới</a>
 
-    <table class="table table-striped mt-3">
+    <div class="table-container mt-3" style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>ID</th>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -16,6 +17,7 @@ class HomeController extends Controller
     {
         $categories = Category::all(); // Lấy tất cả danh mục
         $brands = Brand::all(); 
+        
         $bestSellers = Product::orderBy('sold', 'desc')->limit(10)->get();
         return view('customer.home', compact('categories', 'brands', 'bestSellers')); // Truyền biến vào view
     }

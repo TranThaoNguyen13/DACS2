@@ -24,27 +24,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($nhanviens as $nhanvien)
-            <tr>
-                <td>{{ $nhanvien->id }}</td>
-                <td>{{ $nhanvien->name }}</td>
-                <td>{{ $nhanvien->birthday }}</td>
-                <td>{{ $nhanvien->phone }}</td>
-                <td>{{ $nhanvien->email }}</td>
-                <td>{{ $nhanvien->address }}</td>
-                <td>{{ $nhanvien->function }}</td>
-                <td>{{ $nhanvien->wage }}</td>
-                <td>
-                    <a href="{{ route('admin.nhanvien.edit', $nhanvien->id) }}" class="btn btn-warning btn-sm">Sửa</a>
-                    <form action="{{ route('admin.nhanvien.destroy', $nhanvien->id) }}" method="POST" style="display:inline-block;">
-    @csrf
-    @method('DELETE') <!-- Đây là cách để Laravel nhận diện phương thức DELETE -->
-    <button class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
-</form>
+        @foreach($nhanvien as $nv) <!-- Dùng tên biến đúng như trong controller -->
+    <tr>
+        <td>{{ $nv->id }}</td>
+        <td>{{ $nv->name }}</td>
+        <td>{{ $nv->birthday }}</td>
+        <td>{{ $nv->phone }}</td>
+        <td>{{ $nv->email }}</td>
+        <td>{{ $nv->address }}</td>
+        <td>{{ $nv->function }}</td>
+        <td>{{ $nv->wage }}</td>
+        <td>
+            <a href="{{ route('admin.nhanvien.edit', $nv->id) }}" class="btn btn-warning btn-sm">Sửa</a>
+            <form action="{{ route('admin.nhanvien.destroy', $nv->id) }}" method="POST" style="display:inline-block;">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
+            </form>
+        </td>
+    </tr>
+@endforeach
 
-                </td>
-            </tr>
-            @endforeach
         </tbody>
     </table>
 </div>

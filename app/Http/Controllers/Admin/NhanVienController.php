@@ -10,8 +10,8 @@ class NhanVienController extends Controller
 {
     public function index()
     {
-        $nhanviens = NhanVien::all(); // Lấy tất cả nhân viên từ CSDL
-        return view('admin.nhanvien.index', compact('nhanviens'));
+        $nhanvien = NhanVien::all(); // Lấy tất cả nhân viên từ CSDL
+        return view('admin.nhanvien.index', compact('nhanvien'));
     }
     public function show($id)
 {
@@ -25,23 +25,34 @@ class NhanVienController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'birthday' => 'required|date',
-            'phone' => 'required',
-            'email' => 'required|email|unique:nhanviens',
-            'address' => 'required',
-            'function' => 'required',
-           
-            'wage' => 'required|numeric',
-        ]);
+{
+    // Xác thực dữ liệu nhập vào
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'birthday' => 'required|date',
+        'phone' => 'required|string|max:15',
+        'email' => 'required|email|unique:nhanvien,email',
+        'address' => 'required|string|max:255',
+        'function' => 'required|string|max:255',
+        'wage' => 'required|numeric|min:0',
+    ]);
 
-        NhanVien::create($request->all());
+    // Thêm nhân viên mới vào cơ sở dữ liệu
+    NhanVien::create([
+        'name' => $request->name,
+        'birthday' => $request->birthday,
+        'phone' => $request->phone,
+        'email' => $request->email,
+        'address' => $request->address,
+        'function' => $request->function,
+        'wage' => $request->wage,
+    ]);
 
-        return redirect()->route('admin.nhanvien.index')->with('success', 'Nhân viên được thêm thành công.');
-    }
+    // Quay lại trang danh sách nhân viên với thông báo thành công
+    return redirect()->route('admin.nhanvien.index')->with('success', 'Nhân viên được thêm thành công.');
+}
 
+    
     public function edit($id)
     {
         $nhanvien = NhanVien::findOrFail($id);
@@ -50,22 +61,32 @@ class NhanVienController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Xác thực dữ liệu nhập vào
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'birthday' => 'required|date',
-            'phone' => 'required',
-            'email' => 'required|email|unique:nhanviens,email,' . $id,
-            'address' => 'required',
-            'function' => 'required',
-        
-            'wage' => 'required|numeric',
+            'phone' => 'required|string|max:15',
+            'email' => 'required|email|unique:nhanvien,email,' . $id, // Đảm bảo email duy nhất trừ nhân viên hiện tại
+            'address' => 'required|string|max:255',
+            'function' => 'required|string|max:255',
+            'wage' => 'required|numeric|min:0',
         ]);
-
+    
+        // Tìm nhân viên theo ID và cập nhật
         $nhanvien = NhanVien::findOrFail($id);
-        $nhanvien->update($request->all());
-
+        $nhanvien->update([
+            'name' => $request->name,
+            'birthday' => $request->birthday,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'address' => $request->address,
+            'function' => $request->function,
+            'wage' => $request->wage,
+        ]);
+    
         return redirect()->route('admin.nhanvien.index')->with('success', 'Cập nhật nhân viên thành công.');
     }
+    
 
     public function destroy($id)
     {

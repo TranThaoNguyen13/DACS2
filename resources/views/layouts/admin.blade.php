@@ -41,34 +41,36 @@
         <div class="row">
             <!-- Sidebar (Thanh điều hướng) -->
             <nav class="col-md-3 col-lg-2 bg-light sidebar py-3">
+            <div class="logo text-center my-3">
+    <img src="{{ asset('images/NguyênNhung(1)(1).png') }}" alt="Nguyen Nhung" style="width: 230px;">
+</div>
                 <ul class="nav flex-column">
-                <li class="nav-item">
-                <img src="{{ asset('images/NguyênNhung(1)(1).png') }}" alt="Nguyen Nhung" style="width: 230px">
-                    </li>
+                
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.products.index') }}">Quản Lý Sản Phẩm</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.orders.index') }}">Quản Lý Đơn Hàng</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.categories.index') }}">Quản Lý Danh Mục</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.brands.index') }}">Quản Lý Thương Hiệu</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.users.index') }}">Quản Lý Người Dùng</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.nhanvien.index') }}">Quản Lý Nhân Viên</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.comments.index') }}">Quản Lý Bình Luận</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.reports.index') }}">Xem Báo Cáo Doanh Thu</a>
-                    </li>
+    <a class="nav-link {{ Request::routeIs('admin.products.index') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">Quản Lý Sản Phẩm</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.orders.index') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">Quản Lý Đơn Hàng</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.categories.index') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">Quản Lý Danh Mục</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.brands.index') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}">Quản Lý Thương Hiệu</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.users.index') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">Quản Lý Người Dùng</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.nhanvien.index') ? 'active' : '' }}" href="{{ route('admin.nhanvien.index') }}">Quản Lý Nhân Viên</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.comments.index') ? 'active' : '' }}" href="{{ route('admin.comments.index') }}">Quản Lý Bình Luận</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.reports.index') ? 'active' : '' }}" href="{{ route('admin.reports.index') }}">Xem Báo Cáo Doanh Thu</a>
+</li>
+
                 </ul>
             </nav>
 

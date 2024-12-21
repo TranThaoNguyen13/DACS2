@@ -2,6 +2,7 @@
 
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
+<script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
 
 <div class="container" id="chitiet">
     <div class="row">
@@ -77,7 +78,7 @@
                     @endif
                     @if($comment->reply)
                 <div class="admin-reply mt-3">
-                    <strong>Admin trả lời:</strong>
+                    <strong>Nguyên Nhung trả lời:</strong>
                     <p>{{ $comment->reply }}</p>
                 </div>
             @endif
@@ -167,53 +168,48 @@
 @section('scripts')
 
 <script>
-    $(document).ready(function() {
-       
+$(document).ready(function() {
+    // Xử lý sự kiện tăng giảm số lượng
+    $('.increment').on('click', function() {
+        let quantityInput = $(this).closest('.quantity-control').find('.quantity');
+        let currentQuantity = parseInt(quantityInput.val());
+        quantityInput.val(currentQuantity + 1);
+    });
 
-        // Xử lý nút tăng số lượng
-        $('.increment').on('click', function() {
-            let quantityInput = $(this).siblings('.quantity');
-            let currentQuantity = parseInt(quantityInput.val());
-            quantityInput.val(currentQuantity + 1);
-            console.log("New Quantity (after):", quantityInput.val());
-        });
+    $('.decrement').on('click', function() {
+        let quantityInput = $(this).closest('.quantity-control').find('.quantity');
+        let currentQuantity = parseInt(quantityInput.val());
+        if (currentQuantity > 1) {
+            quantityInput.val(currentQuantity - 1);
+        }
+    });
 
-        // Xử lý nút giảm số lượng
-        $('.decrement').on('click', function() {
-            let quantityInput = $(this).siblings('.quantity');
-            let currentQuantity = parseInt(quantityInput.val());
-            if (currentQuantity > 1) {
-                quantityInput.val(currentQuantity - 1);
-                console.log("Decremented Quantity:", quantityInput.val());
+    // Xử lý sự kiện thêm vào giỏ hàng
+    $('.add-to-cart').on('click', function() {
+        let productId = $(this).data('id');
+        let quantity = $(this).closest('.quantity-control').find('.quantity').val();
+
+        $.ajax({
+            url: "{{ route('add.to.cart') }}",
+            method: "POST",
+            data: {
+                _token: '{{ csrf_token() }}',
+                product_id: productId,
+                quantity: quantity
+            },
+            success: function(response) {
+                alert(response.success);
+                $('#cart-count').text(response.cart_count);
+            },
+            error: function(xhr) {
+                console.error(xhr);
+                alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
             }
         });
-
-        // Xử lý nút "Cart" thêm vào giỏ hàng
-        $('.add-to-cart').on('click', function() {
-            let productId = $(this).data('id');
-            let quantity = $(this).closest('.quantity-control').find('.quantity').val(); // Sửa lại để tìm quantity chính xác
-
-            $.ajax({
-                url: "{{ route('add.to.cart') }}", // Đảm bảo route này tồn tại
-                method: "POST",
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    product_id: productId,
-                    quantity: quantity
-                },
-                success: function(response) {
-                    alert(response.success); // Hiển thị thông báo khi thêm vào giỏ hàng thành công
-                    $('#cart-count').text(response.cart_count); // Cập nhật số lượng giỏ hàng
-                },
-                error: function(xhr) {
-                    
-                    console.error("Error adding to cart:", xhr);
-                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
-                }
-            });
-        });
     });
-   
+});
+
+
 </script>
 
 @endsection

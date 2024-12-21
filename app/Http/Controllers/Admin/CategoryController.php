@@ -24,23 +24,32 @@ class CategoryController extends Controller
     }
     public function store(Request $request)
 {
+    // 1. Xác thực dữ liệu
     $request->validate([
         'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
+    // 2. Tạo một đối tượng Category mới
     $category = new Category;
     $category->name = $request->name;
-    $category->description = $request->description;
-    // Nếu có trường hình ảnh, bạn có thể lưu lại như thế này:
+
+    // 3. Xử lý file hình ảnh
     if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('images', 'public');
-        $category->image = $path;
+        $image = $request->file('image');
+        $imageName = time() . '_' . $image->getClientOriginalName(); // Tạo tên ảnh duy nhất
+        $image->move(public_path('images'), $imageName); // Lưu ảnh vào thư mục public/images
+        $category->image = $imageName; // Lưu đường dẫn ảnh vào database
     }
+
+    // 4. Lưu danh mục vào cơ sở dữ liệu
     $category->save();
 
+    // 5. Chuyển hướng về danh sách danh mục với thông báo thành công
     return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được thêm thành công!');
 }
+
+    
 
     
 
@@ -54,19 +63,45 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate hình ảnh nếu có
         ]);
-
+    
         $category = Category::findOrFail($id);
-        $category->update($request->all());
-
+        $category->name = $request->name;
+    
+        // Kiểm tra và lưu hình ảnh mới (nếu có)
+        if ($request->hasFile('image')) {
+            // Xóa hình ảnh cũ nếu có
+            if ($category->image && file_exists(public_path($category->image))) {
+                unlink(public_path($category->image));
+            }
+    
+            // Lưu hình ảnh mới
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName(); // Tạo tên ảnh duy nhất
+            $image->move(public_path('images'), $imageName); // Lưu vào thư mục public/images
+            $category->image = $imageName; // Cập nhật đường dẫn vào database
+        }
+    
+        $category->save();
+    
         return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được cập nhật.');
     }
+    
 
     public function destroy($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->delete();
+{
+    $category = Category::findOrFail($id);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được xóa.');
+    // Xóa file hình ảnh nếu có
+    if ($category->image && file_exists(public_path($category->image))) {
+        unlink(public_path($category->image));
     }
+
+    $category->delete();
+
+    return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được xóa.');
+}
+
+    
 }

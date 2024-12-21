@@ -52,12 +52,12 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <button class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">Cart</button>
+                            <button class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">+Giỏ</button>
                             <form action="{{ route('order.buy') }}" method="POST">
                                 @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                                     <input type="hidden" name="quantity" value="1"> <!-- Nếu có thông tin số lượng -->
-                                    <button type="submit" class="btn btn-primary">Buy Now</button>
+                                    <button type="submit" class="btn btn-primary">Mua ngay</button>
                             </form>
                         </div>
                     </div>

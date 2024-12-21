@@ -80,7 +80,7 @@
                         </ul>
                     </div>
                     <div class="icons d-flex align-items-center ms-3">
-                    <a href="{{ route('order.history') }}">Tra cứu đơn hàng |</a>
+                    <a href="{{ route('order_history') }}">Tra cứu đơn hàng |</a>
                         
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                          @csrf

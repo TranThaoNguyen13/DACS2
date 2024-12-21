@@ -3,6 +3,8 @@
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 <link rel="stylesheet" href="{{ asset('css/checkoutorder.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@latest"></script>
+
 <div class="container">
     <h2>Thanh toán đơn hàng</h2><br>
     <div class="row">
@@ -13,8 +15,8 @@
         <div class="col-md-6">
             <h3><strong>{{ $order->product->name }}</strong></h3>
             <p><strong>Mã đơn hàng:</strong> {{ $order->id }}</p>
-            <p><strong>Đơn giá:</strong> <span id="unitPrice">{{ number_format($order->product->new_price, 0, ',', '.') }}</span>.000 VND</p>
-            <p><strong>Tổng giá trị đơn hàng:</strong> <span id="totalPrice">{{ number_format($order->total, 0, ',', '.') }}</span>.000 VND</p>
+            <p><strong>Đơn giá:</strong> <span id="unitPrice">{{ number_format($order->product->new_price, 0, ',', '.') }}</span>000 VND</p>
+            <p><strong>Tổng giá trị đơn hàng:</strong> <span id="totalPrice">{{ number_format($order->total, 0, ',', '.') }}</span>000 VND</p>
 
             <!-- Form thanh toán -->
             <form action="{{ route('order.processPayment', $order->id) }}" method="POST">
@@ -47,73 +49,24 @@
                     <input type="email" name="email" class="form-control" required>
                 </div>
 
-                <div class="mb3">
+                <div class="mb-3">
                     <label for="payment_method">Phương thức thanh toán</label>
-                        <select class="form-control" name="payment_method" id="payment_method" required>
-                            <option value="card">Thanh toán qua MoMo</option>
-                            <option value="cod">Thanh toán khi nhận hàng</option>
-                        </select>
-                    </div><br>
+                    <select class="form-control" name="payment_method" id="payment_method" required>
+                        <option value="cod">Thanh toán khi nhận hàng</option>
+                        <option value="card">Thanh toán qua MoMo</option>
+                    </select>
+                </div><br>
+
+                <!-- Khu vực hiển thị mã QR MoMo -->
+                <div id="momoQRCode" class="mt-3" style="display: none;">
+                    <h4>Mã QR thanh toán MoMo:</h4>
+                    <div id="qrCodeContainer"></div>
+                </div>
 
                 <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
                 <button onclick="window.history.back()" class="btn btn-secondary">Quay lại</button>
             </form>
         </div>
-    </div>
-</div>
- <!-- Sản phẩm liên quan: Carousel -->
- <div id="categoryCarousel" class="carousel slide mt-5" data-ride="carousel" style="background-color: white; border-radius: 15px; height: auto;">
-        <div class="carousel-inner">
-            @foreach($relatedProducts->chunk(4) as $chunk)
-                <div class="carousel-item @if($loop->first) active @endif">
-                    <h2>Gợi ý cho bạn:</h2>
-                    <div class="row">
-                        @foreach($chunk as $product)
-                            <div class="col-md-3">
-                            <p class="text-danger discount-tag">-{{ round((($product->old_price - $product->new_price) / $product->old_price) * 100) }}%</p>
-                                <div class="card">
-                                    <img src="{{ asset('images/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}">
-                                    <div class="card-body">
-                                    <div class="row">
-                            <div class="col-6">
-                                <p class="text-danger">{{ number_format($product->new_price, 0, ',', '.') }}.000đ</p>
-                            </div>
-                            <div class="col-6 text-right">
-                                <p class="text-muted" style="text-decoration: line-through;">{{ number_format($product->old_price, 0, ',', '.') }}.000đ</p>
-                            </div>
-                        </div>
-                                        <h5 class="card-title">{{ $product->name }}</h5>
-                                        <div class="stars">
-                                             @for ($i = 0; $i < 5; $i++)
-                                                <span class="fa fa-star {{ $i < $product->rating ? 'checked' : '' }}"></span>
-                                                 @endfor
-                                                 @if($product->sold > 0)
-    <span class="text-muted">Đã bán: {{ $product->sold }} lần</span>
-@else
-    <span class="text-muted">Chưa có lượt bán</span>
-@endif
-                                        </div>
-
-
-                                        
-                        <a href="{{ route('product.show', $product->id) }}" class="btn btn-primary">Xem chi tiết</a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        <!-- Nút điều hướng trái/phải -->
-        <a class="carousel-control-prev" href="#categoryCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black; border-radius: 30px;"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#categoryCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black; border-radius: 30px;"></span>
-            <span class="sr-only">Next</span>
-        </a>
     </div>
 </div>
 
@@ -142,6 +95,55 @@
                 updateTotalPrice();
             }
         });
+
+        // Khi chọn phương thức thanh toán MoMo
+        $('#payment_method').on('change', function() {
+            const paymentMethod = $(this).val();
+            if (paymentMethod === 'card') {
+                // Hiển thị mã QR
+                $('#momoQRCode').show();
+                generateQRCode(); // Gọi hàm tạo mã QR
+            } else {
+                // Ẩn mã QR
+                $('#momoQRCode').hide();
+            }
+        });
+        function generateQRCode() {
+    const username = $("input[name='username']").val();
+
+    if (!username) {
+        alert('Vui lòng nhập họ tên');
+        return;
+    }
+
+    // Chuẩn bị dữ liệu thanh toán
+    const paymentData = {
+        orderId: "{{ $order->id }}",
+        amount: "{{ $order->total }}",
+        productName: "{{ $order->product->name }}",
+        user: username
+    };
+
+    console.log('Dữ liệu thanh toán trước mã hóa:', paymentData);
+
+    // Chuyển đối tượng thành chuỗi JSON
+    const qrCodeData = JSON.stringify(paymentData);
+
+    console.log('Dữ liệu mã QR:', qrCodeData);
+
+    // Tạo mã QR
+    QRCode.toCanvas(document.getElementById('qrCodeContainer'), qrCodeData, function(error) {
+        if (error) {
+            console.error('Lỗi tạo mã QR:', error);
+            alert('Không thể tạo mã QR. Vui lòng thử lại!');
+        } else {
+            console.log('Mã QR đã được tạo thành công!');
+        }
+    });
+}
+
+
     });
 </script>
+
 @endsection

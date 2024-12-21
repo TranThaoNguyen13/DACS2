@@ -12,27 +12,32 @@
     <!-- Thanh menu -->
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'all' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'all']) }}">Tất Cả</a>
+            <a class="nav-link {{ empty($status) ? 'active' : '' }}" href="{{ route('order.history') }}">Tất cả</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'confirmed' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'confirmed']) }}">Đã Xác Nhận</a>
+            <a class="nav-link {{ $status == 'Chờ xác nhận' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Chờ xác nhận']) }}">Chờ xác nhận</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'shipping' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'shipping']) }}">Đang Vận Chuyển</a>
+            <a class="nav-link {{ $status == 'Đã xác nhận' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Đã xác nhận']) }}">Đã xác nhận</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'shipped' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'shipped']) }}">Đã Vận Chuyển</a>
+            <a class="nav-link {{ $status == 'Đang vận chuyển' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Đang vận chuyển']) }}">Đang vận chuyển</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'received' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'received']) }}">Đã Nhận</a>
+            <a class="nav-link {{ $status == 'Đã vận chuyển' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Đã vận chuyển']) }}">Đã vận chuyển</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'returned' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'returned']) }}">Trả Hàng</a>
+            <a class="nav-link {{ $status == 'Đã nhận' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Đã nhận']) }}">Đã nhận</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ $status === 'canceled' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'canceled']) }}">Đã Hủy</a>
+            <a class="nav-link {{ $status == 'Trả đơn/Hoàn hàng' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Trả đơn/Hoàn hàng']) }}">Trả đơn/Hoàn hàng</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ $status == 'Đã huỷ' ? 'active' : '' }}" href="{{ route('order.history', ['status' => 'Đã huỷ']) }}">Đã huỷ</a>
         </li>
     </ul>
+
+ 
 
     <!-- Danh sách đơn hàng -->
     <table class="table mt-3">
@@ -63,15 +68,22 @@
                     <td>{{ $order->phone }}</td>
                     <td>{{ $order->email }}</td>
                     <td>
-                        @if($order->status == 'Pending')
-                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
-                            @csrf
-                            <button type="submit" class="btn btn-danger">Hủy Đơn Hàng</button>
-                        </form>
-                        @else
-                            <button class="btn btn-secondary" disabled>Không thể hủy</button>
-                        @endif
-                    </td>
+                    <td>
+    @if($order->status == 'Chờ xác nhận') <!-- Trạng thái có thể hủy -->
+        <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
+            @csrf
+            <button type="submit" class="btn btn-danger">Hủy Đơn Hàng</button>
+        </form>
+    @elseif($order->status == 'Đã nhận') <!-- Trạng thái đã nhận, thay đổi nút -->
+        <form action="{{ route('order.return', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn trả đơn hàng này?');">
+            @csrf
+            <button type="submit" class="btn btn-warning">Trả Đơn/Hàng Hoàn</button>
+        </form>
+    @else
+        <button class="btn btn-secondary" disabled>Không thể hủy</button>
+    @endif
+</td>
+
                 </tr>
             @empty
                 <tr>
@@ -81,4 +93,5 @@
         </tbody>
     </table>
 </div>
+<button onclick="window.location='{{ route('customer.home') }}'" class="btn btn-primary">Quay lại Trang Chủ</button>
 @endsection

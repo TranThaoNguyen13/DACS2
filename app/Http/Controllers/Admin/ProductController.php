@@ -51,9 +51,19 @@ class ProductController extends Controller
 
         // Xử lý upload ảnh
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
-            $product->image = $imagePath;
+            // Lấy ảnh từ request
+            $image = $request->file('image');
+            
+            // Tạo tên cho ảnh mới, ví dụ sử dụng timestamp để đảm bảo tên file duy nhất
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            
+            // Di chuyển ảnh vào thư mục public/images
+            $image->move(public_path('images'), $imageName);
+            
+            // Lưu đường dẫn vào cơ sở dữ liệu (public/images/tên_ảnh)
+            $product->image = $imageName;
         }
+        
 
         $product->save();
 
@@ -97,7 +107,7 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/products'), $imageName);
+            $image->move(public_path('images'), $imageName);
             $product->image = $imageName;
         }
     
@@ -115,4 +125,28 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index');
     }
+
+    public function search(Request $request)
+{
+    dd($query);
+    $query = $request->input('query');
+
+    // Tìm kiếm sản phẩm theo tên hoặc mô tả
+    $products = Product::where('name', 'LIKE', "%{$query}%")
+        ->orWhere('description', 'LIKE', "%{$query}%")
+        ->get();
+
+    return view('admin.products.index', compact('products'));
+}
+public function show($id)
+{
+    $product = Product::find($id);
+
+    if (!$product) {
+        return redirect()->route('admin.products.index')->with('error', 'Sản phẩm không tồn tại.');
+    }
+
+    return view('admin.products.index', compact('products'));
+}
+
 }

@@ -20,31 +20,30 @@ class BrandController extends Controller
     }
 
     public function store(Request $request)
-    
-{if ($request->hasFile('image')) {
-    $file = $request->file('image');
-
-    // Kiểm tra MIME
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('images'), $filename);
-        $brand->image = $filename;
-    } else {
-        $brand->image = 'default.jpg';
-    }
-}
-
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Kiểm tra loại file hình ảnh
+    ]);
 
     $brand = new Brand();
     $brand->name = $request->name;
 
-    
+    // Kiểm tra xem có hình ảnh không
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('images'), $filename); // Di chuyển ảnh vào thư mục public/images
+        $brand->image = $filename; // Lưu đường dẫn hình ảnh vào cơ sở dữ liệu
+    } else {
+        $brand->image = 'images/default.jpg'; // Nếu không có ảnh, sử dụng ảnh mặc định
+    }
 
-    $brand->save();
+    $brand->save(); // Lưu thông tin thương hiệu vào cơ sở dữ liệu
 
     return redirect()->route('admin.brands.index')->with('success', 'Thêm thương hiệu thành công!');
 }
+
 
 
     public function edit($id)
@@ -57,13 +56,25 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:brands,name,' . $id,
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         $brand = Brand::findOrFail($id);
-        $brand->update($request->all());
-
+        $brand->name = $request->name;
+    
+        // Kiểm tra xem có ảnh mới không
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename); // Di chuyển ảnh vào thư mục public/images
+            $brand->image = $filename; // Lưu đường dẫn hình ảnh vào cơ sở dữ liệu
+        }
+    
+        $brand->save(); // Lưu thông tin thương hiệu vào cơ sở dữ liệu
+    
         return redirect()->route('admin.brands.index')->with('success', 'Thương hiệu đã được cập nhật.');
     }
+    
 
     public function destroy($id)
     {

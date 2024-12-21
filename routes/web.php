@@ -66,7 +66,7 @@ Route::get('/categories', [CategoryController::class, 'index'])->name('danhmuc')
 // Route để hiển thị sản phẩm theo danh mục
 Route::get('/categories/{id}', [CategoryController::class, 'show'])->name('danhmuc.show');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.details');
-Route::get('/categories', [YourController::class, 'index']);
+
 
 
 
@@ -75,7 +75,6 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
 
-Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 use App\Http\Controllers\Customer\ProductController;
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -254,14 +253,10 @@ Route::prefix('admin')->group(function () {
 
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
-Route::prefix('admin')->middleware('auth', 'admin')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', AdminCategoryController::class);
 });
-Route::get('admin/categories', [AdminCategoryController::class, 'index'])->name('admin.categories.index');
-Route::get('admin/categories/create', [AdminCategoryController::class, 'index'])->name('admin.categories.create');
-Route::get('admin/categories/edit', [AdminCategoryController::class, 'index'])->name('admin.categories.edit');
-Route::get('admin/categories/destroy', [AdminCategoryController::class, 'index'])->name('admin.categories.destroy');
-Route::get('/category/{id}', [AdminCategoryController::class, 'show'])->name('category.show');
+
 
 // route('admin.categories.index', ['admin' => $adminId]);
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
@@ -297,6 +292,7 @@ use App\Http\Controllers\Customer\ClinicSpaController;
 
 
 Route::get('/clinic-spa', [ClinicSpaController::class, 'index']);
+Route::get('/clinic-spa/{id}', [ClinicSpaController::class, 'show'])->name('clinicSpa.show');
 
 // web.php
 Route::get('/order-history', [OrderController::class, 'showOrderHistory'])->name('order.history');
@@ -366,3 +362,15 @@ Route::get('admin/reports', [ReportController::class, 'index'])->name('admin.rep
 
 
 
+Route::get('/order_history/{status?}', [OrderController::class, 'showOrderHistory'])->name('order_history');
+Route::get('/order-history', [OrderController::class, 'showOrderHistory'])->name('order.history');
+// Định nghĩa route cho việc trả đơn/hàng hoàn
+Route::post('/order/{id}/return', [OrderController::class, 'return'])->name('order.return');
+Route::post('/process-checkout', [OrderController::class, 'processCheckout'])->name('process.checkout');
+
+Route::middleware(['web'])->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+});
+
+Route::get('/admin/products/search', [AdminProductController::class, 'search'])->name('admin.products.search');
+Route::get('/admin/products/{id}', [AdminProductController::class, 'show'])->name('admin.products.show');

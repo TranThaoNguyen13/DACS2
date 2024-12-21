@@ -19,23 +19,25 @@ class UserController extends Controller
     {
         return view('admin.users.create');
     }
-
     public function store(Request $request)
     {
+        // Validate dữ liệu đầu vào
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,user',
+            'username' => 'required|string|max:255|unique:users,username', // Kiểm tra tính duy nhất của username
+            'email' => 'required|email|unique:users,email', // Kiểm tra tính duy nhất của email
+            'password' => 'required|string|min:8|confirmed', // Kiểm tra mật khẩu và xác nhận mật khẩu
+            'role' => 'required|in:0,1', // Kiểm tra giá trị của role (0 cho user, 1 cho admin)
         ]);
-
+    
+        // Tạo mới người dùng
         User::create([
-            'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'password' => Hash::make($request->password), // Mã hóa mật khẩu
+            'role' => $request->role, // Lưu giá trị role (0 hoặc 1)
         ]);
-
+    
+        // Chuyển hướng và thông báo thành công
         return redirect()->route('admin.users.index')->with('success', 'Người dùng đã được thêm thành công!');
     }
 

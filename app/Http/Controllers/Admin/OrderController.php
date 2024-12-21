@@ -32,7 +32,7 @@ class OrderController extends Controller
 
         // Validate dữ liệu
         $request->validate([
-            'status' => 'required|in:pending,processed,shipped,delivered,canceled',
+            'status' => 'required|in:Chờ xác nhận,Đã xác nhận,Đang vận chuyển,Đã vận chuyển,Đã nhận,Trả đơn/Hoàn hàng,Đã huỷ',
         ]);
 
         // Cập nhật trạng thái đơn hàng

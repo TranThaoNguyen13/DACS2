@@ -28,7 +28,7 @@ class OrderController extends Controller
         $order = new Order();
         $order->user_id = Auth::id(); // Lấy ID người dùng đã đăng nhập
         $order->total = $total;
-        $order->status = 'Pending'; // Trạng thái ban đầu
+        $order->status = 'Chờ xác nhận'; // Trạng thái ban đầu
         $order->save();
 
         // Xóa giỏ hàng sau khi đặt hàng thành công
@@ -43,7 +43,7 @@ class OrderController extends Controller
 
     public function checkout(Order $order)
     {
-        if ($order->status !== 'pending') {
+        if ($order->status !== 'Chờ xác nhận') {
             return redirect()->route('order.success')->with('error', 'Đơn hàng đã được thanh toán.');
         }
     
@@ -69,8 +69,8 @@ public function cancelOrder($orderId)
     $order = Order::findOrFail($orderId);
 
     // Kiểm tra nếu đơn hàng chưa được thanh toán (trạng thái Pending)
-    if ($order->status == 'Pending') {
-        $order->status = 'Cancelled'; // Đặt trạng thái là "Cancelled"
+    if ($order->status == 'Chờ xác nhận') {
+        $order->status = 'Đã huỷ'; // Đặt trạng thái là "Cancelled"
         $order->save();
 
         // Thông báo thành công
@@ -100,7 +100,7 @@ public function processPayment(Request $request, Order $order)
     $order->email = $request->input('email');
     $order->username = $request->input('username');
     $order->payment_method = $request->input('payment_method');
-    $order->status = 'chờ xác nhận'; // Đặt trạng thái đã thanh toán
+    $order->status = 'Chờ xác nhận'; // Đặt trạng thái đã thanh toán
 
 
     // Lưu lại thông tin thanh toán
@@ -149,7 +149,7 @@ public function store(Request $request)
     $order = new Order();
     $order->user_id = auth()->user()->id;
     $order->total = $totalPrice;
-    $order->status = 'chờ xác nhần';
+    $order->status = 'Chờ xác nhận';
     $order->username = $validated['username'];
     $order->email = $validated['email'];
     $order->phone = $validated['phone'];
@@ -177,30 +177,29 @@ public function store(Request $request)
     return redirect()->route('customer.home')->with('success', 'Đặt hàng thành công');
 }
 
-public function showOrderHistory()
+public function showOrderHistory(Request $request)
 {
-    // Giả sử bạn có một hệ thống xác thực người dùng, bạn có thể lấy các đơn hàng của người dùng đang đăng nhập
-    $userId = auth()->id(); // Lấy ID người dùng đang đăng nhập
+    // Lấy ID người dùng đang đăng nhập
+    $userId = auth()->id(); 
 
-    // Lấy tất cả đơn hàng của người dùng
-    $orders = Order::where('user_id', $userId)->get();
+    // Lấy trạng thái đơn hàng từ query string (?status=Đã xác nhận)
+    $status = $request->input('status');
 
-    return view('order_history', compact('orders'));
+    // Lọc đơn hàng theo user_id và trạng thái (nếu có)
+    $query = Order::where('user_id', $userId);
+
+    if ($status) {
+        $query->where('status', $status);
+    }
+
+    // Lấy danh sách đơn hàng
+    $orders = $query->get();
+
+    // Trả về view và truyền dữ liệu
+    return view('order_history', compact('orders', 'status'));
 }
 
-public function history(Request $request)
-    {
-        $status = $request->get('status', 'all'); // Lấy trạng thái từ query string, mặc định là 'all'
 
-        // Lọc đơn hàng dựa trên trạng thái
-        if ($status === 'all') {
-            $orders = Order::all(); // Hiển thị tất cả đơn hàng
-        } else {
-            $orders = Order::where('status', $status)->get();
-        }
-
-        return view('orders.history', compact('orders', 'status'));
-    }
 
 public function buyNow(Request $request)
 {
@@ -222,7 +221,7 @@ public function buyNow(Request $request)
     $order->total = $total;
     $order->product_id = $productId;
     $order->quantity = $quantity; // Thêm số lượng sản phẩm trong đơn hàng
-    $order->status = 'pending'; // Trạng thái mặc định là chờ xử lý
+    $order->status = 'Chờ xác nhận'; // Trạng thái mặc định là chờ xử lý
     $order->save();
 
     // Cập nhật số lượng đã bán trong sản phẩm
@@ -231,6 +230,26 @@ public function buyNow(Request $request)
 
     // Chuyển hướng đến trang thanh toán cho đơn hàng vừa tạo
     return redirect()->route('order.checkout', ['order' => $order->id]);
+}
+
+
+public function return($id)
+{
+    // Tìm đơn hàng theo ID
+    $order = Order::findOrFail($id);
+    
+    // Kiểm tra trạng thái đơn hàng là 'Đã nhận'
+    if ($order->status == 'Đã nhận') {
+        // Cập nhật trạng thái đơn hàng
+        $order->status = 'Trả đơn/Hoàn hàng'; // Hoặc trạng thái bạn muốn
+        $order->save();
+
+        // Trả về trang lịch sử đơn hàng với thông báo thành công
+        return redirect()->route('order.history')->with('success', 'Đơn hàng đã được trả/hoàn');
+    }
+
+    // Nếu trạng thái không phải 'Đã nhận', trả về thông báo lỗi
+    return redirect()->route('order.history')->with('error', 'Không thể trả/hoàn đơn hàng này');
 }
 
 
