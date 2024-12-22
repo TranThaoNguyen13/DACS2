@@ -11,7 +11,7 @@
 
 /* Tạo vùng cuộn cho bảng */
 .table-wrapper {
-    max-height: 550px; /* Đặt chiều cao tối đa cho vùng cuộn */
+    max-height: 500px; /* Đặt chiều cao tối đa cho vùng cuộn */
     overflow-y: auto; /* Hiển thị thanh cuộn dọc khi có nhiều hơn số dòng */
     display: block;
 }

@@ -2,28 +2,36 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
+    // Thêm sản phẩm vào giỏ hàng
     public function addToCart(Request $request)
     {
+        
         $productId = $request->input('product_id');
-        $quantity = $request->input('quantity');
-
+        $quantity = $request->input('quantity', 1); // Mặc định số lượng là 1
+    
         if ($quantity <= 0) {
             return response()->json(['error' => 'Số lượng không hợp lệ!']);
         }
-
+    
         $product = Product::find($productId);
+    
         if (!$product) {
             return response()->json(['error' => 'Sản phẩm không tồn tại!']);
         }
-
+    
+        // Lấy giỏ hàng từ session
         $cart = session()->get('cart', []);
+    
+        // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng chưa
         if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] += $quantity;
+            $cart[$productId]['quantity'] += $quantity; // Cộng dồn số lượng
         } else {
             $cart[$productId] = [
                 'name' => $product->name,
@@ -33,294 +41,212 @@ class CartController extends Controller
                 'image' => $product->image,
             ];
         }
-
+    
+        // Lưu giỏ hàng vào session
         session()->put('cart', $cart);
+    
+        // Kiểm tra lại giỏ hàng trong session
+        Log::info('Giỏ hàng sau khi thêm sản phẩm: ', $cart);
+    
+        return response()->json(['success' => 'Sản phẩm đã được thêm vào giỏ hàng!']);
+    }
+    
 
-        $cartCount = count($cart);
-        return response()->json(['success' => 'Sản phẩm đã được thêm vào giỏ hàng!', 'cart_count' => $cartCount]);
+    // Hiển thị giỏ hàng
+    public function index()
+    {
+        // Lấy giỏ hàng từ session
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return view('cart.index', ['cart' => [], 'totalQuantity' => 0, 'totalPrice' => 0]);
+        }
+
+        // Tính tổng số lượng và tổng giá trị giỏ hàng
+        $totalQuantity = array_sum(array_column($cart, 'quantity'));
+        $totalPrice = array_sum(array_map(function ($item) {
+            return $item['new_price'] * $item['quantity'];
+        }, $cart));
+
+        // Trả về view với dữ liệu giỏ hàng
+        return view('cart.index', compact('cart', 'totalQuantity', 'totalPrice'));
     }
 
+    // Cập nhật số lượng sản phẩm trong giỏ hàng
     public function update(Request $request)
-{
-    // Lấy giỏ hàng từ session hoặc database
-    $cart = session()->get('cart', []);
-
-    // Cập nhật số lượng cho từng sản phẩm
-    foreach ($request->quantities as $key => $quantity) {
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] = $quantity;
-        }
-    }
-
-    // Lưu lại giỏ hàng vào session
-    session()->put('cart', $cart);
-
-    // Chuyển hướng lại trang giỏ hàng với thông báo
-    return redirect()->back()->with('success', 'Cập nhật số lượng thành công.');
-}
-
-
-
-public function checkoutAll(Request $request)
-{
-    // Lấy giỏ hàng từ session
-    $cart = session()->get('cart', []);
-
-    // Kiểm tra nếu giỏ hàng trống
-    if (empty($cart)) {
-        return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn không có sản phẩm.');
-    }
-
-    // Tính tổng tiền của giỏ hàng
-    $total = 0;
-    foreach ($cart as $item) {
-        $total += $item['new_price'] * $item['quantity'];
-    }
-
-    // Chuyển dữ liệu giỏ hàng và tổng tiền sang trang thanh toán (checkout)
-    return view('checkout', compact('cart', 'total'));
-}
-
-
-
-public function checkoutSelected(Request $request)
-{
-    $selectedProducts = $request->input('selected_products', []);
-
-    if (empty($selectedProducts)) {
-        return redirect()->route('cart.index')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-    }
-
-    $cart = session()->get('cart', []);
-    $cartItems = [];
-    $total = 0;
-
-    foreach ($selectedProducts as $productId) {
-        if (isset($cart[$productId])) {
-            $cartItems[] = $cart[$productId];
-            $total += $cart[$productId]['new_price'] * $cart[$productId]['quantity'];
-        }
-    }
-
-    if (empty($cartItems)) {
-        return redirect()->route('cart.index')->with('error', 'Không có sản phẩm nào hợp lệ để thanh toán.');
-    }
-
-    return view('checkout', compact('cartItems', 'total'));
-}
-
-    public function remove($id)
     {
         $cart = session()->get('cart', []);
 
-        if (isset($cart[$id])) {
-            unset($cart[$id]);
+        // Lấy số lượng của các sản phẩm từ form gửi lên
+        foreach ($request->input('quantities', []) as $productId => $quantity) {
+            // Kiểm tra và cập nhật số lượng nếu sản phẩm có trong giỏ
+            if (isset($cart[$productId])) {
+                // Đảm bảo số lượng không nhỏ hơn 1
+                $cart[$productId]['quantity'] = max(1, (int)$quantity);
+            }
+        }
+
+        // Lưu lại giỏ hàng vào session
+        session()->put('cart', $cart);
+
+        // Kiểm tra lại giỏ hàng trong session
+        Log::info('Giỏ hàng sau khi cập nhật: ', $cart);
+
+        return redirect()->route('cart.index')->with('success', 'Cập nhật giỏ hàng thành công!');
+    }
+    public function updatee(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        // Lấy số lượng của các sản phẩm từ form gửi lên
+        foreach ($request->input('quantities', []) as $productId => $quantity) {
+            // Kiểm tra và cập nhật số lượng nếu sản phẩm có trong giỏ
+            if (isset($cart[$productId])) {
+                // Đảm bảo số lượng không nhỏ hơn 1
+                $cart[$productId]['quantity'] = max(1, (int)$quantity);
+            }
+        }
+
+        // Lưu lại giỏ hàng vào session
+        session()->put('cart', $cart);
+
+        // Kiểm tra lại giỏ hàng trong session
+        Log::info('Giỏ hàng sau khi cập nhật: ', $cart);
+
+        return redirect()->route('checkout')->with('success', 'Cập nhật giỏ hàng thành công!');
+    }
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    public function remove($productId)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$productId])) {
+            unset($cart[$productId]);
             session()->put('cart', $cart);
         }
 
+        // Nếu giỏ hàng trống thì xóa giỏ hàng khỏi session
         if (empty($cart)) {
             session()->forget('cart');
         }
 
-        session()->flash('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
-        return redirect()->route('cart.index');
+        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
     }
-
-    public function index()
-{
-    $cart = session()->get('cart', []);
-
-    foreach ($cart as $id => $item) {
-        // Kiểm tra xem sản phẩm có tồn tại trong cơ sở dữ liệu
-        $product = Product::find($id);
-        if (!$product) {
-            // Nếu sản phẩm không tồn tại, xóa khỏi giỏ hàng
-            unset($cart[$id]);
-        }
-    }
-
-    // Cập nhật giỏ hàng sau khi lọc
-    session()->put('cart', $cart);
-
-    $totalQuantity = array_sum(array_column($cart, 'quantity'));
-    $totalPrice = array_sum(array_map(function ($item) {
-        return $item['new_price'] * $item['quantity'];
-    }, $cart));
-
-    return view('cart.index', compact('cart', 'totalQuantity', 'totalPrice'));
-}
-
 
     public function checkout(Request $request)
     {
-        $selectedProducts = $request->input('selected_products', []); // Mặc định là mảng rỗng nếu không có sản phẩm nào được chọn
+        $cart = session()->get('cart', []);
 
-        // Kiểm tra nếu không có sản phẩm nào được chọn
-        if (empty($selectedProducts)) {
-            return redirect()->route('cart.index')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
-        $cartItems = [];
+        // Tính tổng số tiền của giỏ hàng
         $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['new_price'] * $item['quantity'];
+        }
 
-        foreach ($selectedProducts as $productId) {
-            $product = session()->get("cart.$productId");
+        // Cập nhật số lượng đã bán trong database (Chỉ thực hiện sau khi thanh toán)
+        foreach ($cart as $productId => $item) {
+            $product = Product::find($productId);
+
             if ($product) {
-                $cartItems[] = $product;
-                $total += $product['new_price'] * $product['quantity'];
+                $product->sold += $item['quantity']; // Cập nhật số lượng đã bán
+                $product->save(); // Lưu thay đổi vào database
             }
         }
 
-        // Kiểm tra nếu không có sản phẩm nào trong giỏ hàng
-        if (empty($cartItems)) {
-            return redirect()->route('cart.index')->with('error', 'Không có sản phẩm nào trong giỏ hàng để thanh toán.');
+        // Lấy lại thông tin sản phẩm đã được cập nhật
+        $productsUpdated = Product::whereIn('id', array_keys($cart))->get();
+
+        // Trả về view với thông tin cập nhật
+        return view('checkout', compact('cart', 'total', 'productsUpdated'));
+    }
+
+    // Phương thức xử lý thanh toán các sản phẩm đã chọn
+    public function checkoutAll(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
-        return view('checkout', compact('cartItems', 'total'));
+        // Tính tổng số tiền của giỏ hàng
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['new_price'] * $item['quantity'];
+        }
+
+        // Cập nhật số lượng đã bán trong database (Chỉ thực hiện sau khi thanh toán)
+        foreach ($cart as $productId => $item) {
+            $product = Product::find($productId);
+
+            if ($product) {
+                $product->sold += $item['quantity']; // Cập nhật số lượng đã bán
+                $product->save(); // Lưu thay đổi vào database
+            }
+        }
+
+        // Lấy lại thông tin sản phẩm đã được cập nhật
+        $productsUpdated = Product::whereIn('id', array_keys($cart))->get();
+
+        // Trả về view với thông tin cập nhật
+        return view('checkout', compact('cart', 'total', 'productsUpdated'));
     }
+// Thanh toán các sản phẩm được chọn
+public function checkoutSelected(Request $request)
+{
+    // Lấy thông tin các sản phẩm được chọn từ form gửi lên
+    $selectedProducts = $request->input('selected_products', []); 
+
+    // Kiểm tra nếu không có sản phẩm nào được chọn
+    if (empty($selectedProducts)) {
+        return redirect()->route('cart.index')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+    }
+
+    // Lấy giỏ hàng từ session
+    $cart = session()->get('cart', []);
+    $selectedItems = [];
+    $total = 0;
+
+    // Kiểm tra và tính tổng tiền cho các sản phẩm được chọn
+    foreach ($selectedProducts as $productId) {
+        if (isset($cart[$productId])) {
+            $selectedItems[$productId] = $cart[$productId];
+            $total += $cart[$productId]['new_price'] * $cart[$productId]['quantity'];
+        }
+    }
+
+    // Kiểm tra nếu không có sản phẩm nào hợp lệ được chọn
+    if (empty($selectedItems)) {
+        return redirect()->route('cart.index')->with('error', 'Sản phẩm được chọn không hợp lệ hoặc đã bị xóa khỏi giỏ hàng.');
+    }
+
+    // Cập nhật số lượng bán cho các sản phẩm đã chọn trong database
+    foreach ($selectedItems as $productId => $item) {
+        $product = Product::find($productId);
+
+        if ($product) {
+            // Cập nhật số lượng bán chỉ cho những sản phẩm đã được chọn thanh toán
+            $product->sold += $item['quantity'];
+            $product->save(); // Lưu thay đổi vào cơ sở dữ liệu
+        }
+    }
+
+    // // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+    // foreach ($selectedProducts as $productId) {
+    //     if (isset($cart[$productId])) {
+    //         unset($cart[$productId]); // Xóa sản phẩm đã thanh toán khỏi giỏ hàng
+    //     }
+    // }
+
+    // Cập nhật lại giỏ hàng trong session sau khi xóa các sản phẩm đã thanh toán
+    session()->put('cart', $cart);
+
+    // Trả về view với giỏ hàng đã chọn và tổng tiền
+    return view('checkout', ['cart' => $selectedItems, 'total' => $total]);
 }
-
-
-
-
-
-// namespace App\Http\Controllers;
-
-// use Illuminate\Http\Request;
-// use App\Models\Product;
-// use Illuminate\Support\Facades\Session;
-
-// class CartController extends Controller
-// {
-//     public function addToCart(Request $request)
-//     {
-//         $productId = $request->input('product_id');
-//         $quantity = $request->input('quantity');
-    
-//         if ($quantity <= 0) {
-//             return response()->json(['error' => 'Số lượng không hợp lệ!']);
-//         }
-    
-//         $product = Product::find($productId);
-//         if (!$product) {
-//             return response()->json(['error' => 'Sản phẩm không tồn tại!']);
-//         }
-    
-//         $cart = session()->get('cart', []);
-//         if (isset($cart[$productId])) {
-//             $cart[$productId]['quantity'] += $quantity;
-//         } else {
-//             $cart[$productId] = [
-//                 'name' => $product->name,
-//                 'quantity' => $quantity,
-//                 'new_price' => $product->new_price,
-//                 'old_price' => $product->old_price,
-//                 'image' => $product->image,
-//             ];
-//         }
-    
-//         session()->put('cart', $cart);
-    
-//         $cartCount = count($cart);
-//         return response()->json(['success' => 'Sản phẩm đã được thêm vào giỏ hàng!', 'cart_count' => $cartCount]);
-//     }
-    
-
-//     public function index()
-//     {
-//         // Lấy giỏ hàng từ session
-//         $cart = session()->get('cart', []);
-
-//         // Trả về view giỏ hàng
-//         return view('cart.index', compact('cart'));
-//     }
-
-//     public function checkout()
-//     {
-//         // Lấy giỏ hàng từ session
-//         $cartItems = Session::get('cart', []);
-//         $totalQuantity = 0;
-//         $totalPrice = 0;
-
-//         // Tính tổng số lượng và giá tiền của giỏ hàng
-//         foreach ($cartItems as $item) {
-//             $totalQuantity += $item['quantity'];
-//             $totalPrice += $item['new_price'] * $item['quantity'];
-//         }
-
-//         return view('checkout', compact('cartItems', 'totalQuantity', 'totalPrice'));
-//     }
-
-//     public function update(Request $request, $id)
-// {
-//     // Lấy giỏ hàng từ session
-//     $cart = session()->get('cart');
-
-//     // Kiểm tra sản phẩm có trong giỏ không
-//     if (isset($cart[$id])) {
-//         // Cập nhật số lượng sản phẩm
-//         $cart[$id]['quantity'] = $request->input('quantity');
-//         session()->put('cart', $cart);  // Cập nhật giỏ hàng trong session
-
-//         // Thông báo cập nhật thành công
-//         session()->flash('success', 'Giỏ hàng đã được cập nhật!');
-//     }
-
-//     // Chuyển hướng về trang giỏ hàng
-//     return redirect()->route('cart.index');
-// }
-
-//     public function remove($id)
-// {
-//     // Lấy giỏ hàng từ session
-//     $cart = session()->get('cart');
-
-//     // Kiểm tra nếu sản phẩm tồn tại trong giỏ hàng
-//     if (isset($cart[$id])) {
-//         unset($cart[$id]);  // Xóa sản phẩm khỏi giỏ hàng
-//         session()->put('cart', $cart);  // Cập nhật lại giỏ hàng trong session
-//     }
-
-//     // Kiểm tra nếu giỏ hàng trống, xóa giỏ hàng khỏi session
-//     if (empty($cart)) {
-//         session()->forget('cart');
-//     }
-
-//     // Đặt thông báo vào session và chuyển hướng về trang giỏ hàng
-//     session()->flash('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
-//     return redirect()->route('cart.index');  // Giả sử route trang giỏ hàng là 'cart.index'
-// }
-// // public function checkoutSelected(Request $request)
-// // {
-// //     $selectedProducts = $request->input('selected_products');
-
-// //     // Nếu không có sản phẩm nào được chọn, thông báo lỗi
-// //     if (empty($selectedProducts)) {
-// //         return redirect()->route('cart.index')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-// //     }
-
-// //     // Lấy thông tin sản phẩm từ session
-// //     $products = [];
-// //     $total = 0;
-// //     foreach ($selectedProducts as $productId) {
-// //         $product = session()->get("cart.$productId");
-// //         if ($product) {
-// //             $products[] = $product;
-// //             $total += $product['new_price'] * $product['quantity'];
-// //         }
-// //     }
-
-// //     // Chuyển đến trang thanh toán với danh sách sản phẩm đã chọn
-// //     return view('checkout', compact('products', 'total'));
-// // }
-// public function showCart()
-// {
-//     $cartItems = Cart::getItems(); // Or however you're retrieving items from the cart
-//     return view('cart.index', compact('cartItems'));
-// }
-
-
-
-
-
-// }
+}

@@ -102,11 +102,11 @@ Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add.to.
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 // Route để cập nhật sản phẩm trong giỏ hàng
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
 
 // Route để xóa sản phẩm khỏi giỏ hàng
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
 
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
@@ -156,6 +156,10 @@ Route::get('products/{id}', [ProductController::class, 'show'])->name('product.d
 Route::get('/checkout/{order}', [OrderController::class, 'checkout'])->name('order.checkout');
 Route::post('/order/{order}/process-payment', [OrderController::class, 'processPayment'])->name('order.processPayment');
 Route::get('/checkout/{order}', [OrderController::class, 'checkout'])->name('order.checkout');
+
+
+Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+
 // web.php
 // Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 // // web.php
@@ -169,7 +173,6 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 // Route cập nhật giỏ hàng (đảm bảo đúng phương thức và route name)
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 // Route xóa sản phẩm khỏi giỏ hàng
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
@@ -331,7 +334,6 @@ Route::get('/hot_deals', [PageController::class, 'showHotDeals'])->name('hot_dea
 
 // Tạo hàm trong Controller (bước tiếp theo)
 
-Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 
 // Định nghĩa route cho chức năng thanh toán sản phẩm đã chọn
@@ -339,7 +341,7 @@ Route::post('/cart/checkout-selected', [CartController::class, 'checkoutSelected
 
 Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkoutAll');
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-
+Route::post('/cart/updatee', [CartController::class, 'updatee'])->name('cart.updatee');
 Route::get('/password/change', [UserController::class, 'showChangePasswordForm'])->name('password.change');
 Route::post('/password/change', [UserController::class, 'changePassword'])->name('password.update');
 use App\Http\Controllers\Customer\ProductController as CustomerProductController;
