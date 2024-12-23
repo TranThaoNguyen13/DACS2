@@ -376,3 +376,9 @@ Route::middleware(['web'])->group(function () {
 
 Route::get('/admin/products/search', [AdminProductController::class, 'search'])->name('admin.products.search');
 Route::get('/admin/products/{id}', [AdminProductController::class, 'show'])->name('admin.products.show');
+Route::get('/admin/orders/search', [OrderController::class, 'search'])->name('admin.orders.search');
+Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+
+Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');

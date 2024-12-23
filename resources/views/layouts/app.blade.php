@@ -85,8 +85,19 @@
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                          @csrf
                     </form>
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng xuất |</a>
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Đăng nhập |</a>
+                        
+                    @auth
+                        <!-- Người dùng đã đăng nhập -->
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            Đăng xuất |
+                        </a>
+                    @else
+                        <!-- Người dùng chưa đăng nhập -->
+                        <a href="{{ route('login') }}">Đăng nhập |</a>
+                    @endauth
                         
                         </div><a href="{{ route('cart.index') }}" class="position-relative" id="cart">
                             <i class="fas fa-shopping-cart" style="font-size: 20px;"></i>

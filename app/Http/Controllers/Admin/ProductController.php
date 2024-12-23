@@ -86,7 +86,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'new_price' => 'required|numeric',
             'old_price' => 'nullable|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string',
             'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
@@ -125,19 +125,31 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index');
     }
-
     public function search(Request $request)
 {
-    dd($query);
+    // Lấy giá trị tìm kiếm từ form
     $query = $request->input('query');
+    
+    // Kiểm tra xem query có rỗng không
+    if (empty($query)) {
+        return redirect()->route('admin.products.index')->with('error', 'Vui lòng nhập từ khóa tìm kiếm.');
+    }
 
-    // Tìm kiếm sản phẩm theo tên hoặc mô tả
+    // Tìm kiếm sản phẩm theo tên, mô tả, danh mục, hoặc thương hiệu
     $products = Product::where('name', 'LIKE', "%{$query}%")
         ->orWhere('description', 'LIKE', "%{$query}%")
+        ->orWhereHas('category', function ($queryBuilder) use ($query) {
+            $queryBuilder->where('name', 'LIKE', "%{$query}%");
+        })
+        ->orWhereHas('brand', function ($queryBuilder) use ($query) {
+            $queryBuilder->where('name', 'LIKE', "%{$query}%");
+        })
         ->get();
 
+    // Trả về kết quả tìm kiếm cho view
     return view('admin.products.index', compact('products'));
 }
+
 public function show($id)
 {
     $product = Product::find($id);

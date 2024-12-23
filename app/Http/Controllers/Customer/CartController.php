@@ -94,6 +94,24 @@ class CartController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Cập nhật giỏ hàng thành công!');
     }
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    public function remove($productId)
+    {
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$productId])) {
+            unset($cart[$productId]);
+            session()->put('cart', $cart);
+        }
+
+        // Nếu giỏ hàng trống thì xóa giỏ hàng khỏi session
+        if (empty($cart)) {
+            session()->forget('cart');
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
+    }
     public function updatee(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -115,25 +133,6 @@ class CartController extends Controller
 
         return redirect()->route('checkout')->with('success', 'Cập nhật giỏ hàng thành công!');
     }
-
-    // Xóa sản phẩm khỏi giỏ hàng
-    public function remove($productId)
-    {
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]);
-            session()->put('cart', $cart);
-        }
-
-        // Nếu giỏ hàng trống thì xóa giỏ hàng khỏi session
-        if (empty($cart)) {
-            session()->forget('cart');
-        }
-
-        return redirect()->route('cart.index')->with('success', 'Sản phẩm đã được xóa khỏi giỏ hàng!');
-    }
-
     public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -196,8 +195,8 @@ class CartController extends Controller
         // Trả về view với thông tin cập nhật
         return view('checkout', compact('cart', 'total', 'productsUpdated'));
     }
-// Thanh toán các sản phẩm được chọn
-public function checkoutSelected(Request $request)
+   // Thanh toán các sản phẩm được chọn
+   public function checkoutSelected(Request $request)
 {
     // Lấy thông tin các sản phẩm được chọn từ form gửi lên
     $selectedProducts = $request->input('selected_products', []); 
@@ -236,17 +235,17 @@ public function checkoutSelected(Request $request)
         }
     }
 
-    // // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
-    // foreach ($selectedProducts as $productId) {
-    //     if (isset($cart[$productId])) {
-    //         unset($cart[$productId]); // Xóa sản phẩm đã thanh toán khỏi giỏ hàng
-    //     }
-    // }
+    // Xóa các sản phẩm không được chọn thanh toán khỏi giỏ hàng
+    foreach ($cart as $productId => $item) {
+        if (!in_array($productId, $selectedProducts)) {
+            unset($cart[$productId]); // Xóa sản phẩm không được chọn khỏi giỏ hàng
+        }
+    }
 
-    // Cập nhật lại giỏ hàng trong session sau khi xóa các sản phẩm đã thanh toán
+    // Cập nhật lại giỏ hàng trong session
     session()->put('cart', $cart);
 
     // Trả về view với giỏ hàng đã chọn và tổng tiền
     return view('checkout', ['cart' => $selectedItems, 'total' => $total]);
 }
-}
+}   

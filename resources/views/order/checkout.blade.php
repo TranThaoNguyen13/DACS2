@@ -1,9 +1,16 @@
 @extends('layouts.app')
-
+<style>
+    #qrCodeContainer img {
+    width: 300px;
+    height: 300px;
+}
+</style>
 @section('content')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 <link rel="stylesheet" href="{{ asset('css/checkoutorder.css') }}">
 <script src="https://cdn.jsdelivr.net/npm/qrcode@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
+
 
 <div class="container">
     <h2>Thanh toán đơn hàng</h2><br>
@@ -15,8 +22,8 @@
         <div class="col-md-6">
             <h3><strong>{{ $order->product->name }}</strong></h3>
             <p><strong>Mã đơn hàng:</strong> {{ $order->id }}</p>
-            <p><strong>Đơn giá:</strong> <span id="unitPrice">{{ number_format($order->product->new_price, 0, ',', '.') }}</span>000 VND</p>
-            <p><strong>Tổng giá trị đơn hàng:</strong> <span id="totalPrice">{{ number_format($order->total, 0, ',', '.') }}</span>000 VND</p>
+            <p><strong>Đơn giá:</strong> <span id="unitPrice">{{ number_format($order->product->new_price, 0, ',', '.') }}</span>.000 VND</p>
+            <p><strong>Tổng giá trị đơn hàng:</strong> <span id="totalPrice">{{ number_format($order->total, 0, ',', '.') }}</span>.000 VND</p>
 
             <!-- Form thanh toán -->
             <form action="{{ route('order.processPayment', $order->id) }}" method="POST">
@@ -59,9 +66,10 @@
 
                 <!-- Khu vực hiển thị mã QR MoMo -->
                 <div id="momoQRCode" class="mt-3" style="display: none;">
-                    <h4>Mã QR thanh toán MoMo:</h4>
-                    <div id="qrCodeContainer"></div>
-                </div>
+    <h4>Mã QR thanh toán MoMo:</h4>
+    <div id="qrCodeContainer"></div>
+</div>
+
 
                 <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
                 <button onclick="window.history.back()" class="btn btn-secondary">Quay lại</button>
@@ -71,9 +79,9 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         const unitPrice = {{ $order->product->new_price }};
-        
+
         function updateTotalPrice() {
             const quantity = parseInt($('#quantity').val());
             const totalPrice = unitPrice * quantity;
@@ -81,14 +89,14 @@
         }
 
         // Xử lý nút tăng số lượng
-        $('.increment').on('click', function() {
+        $('.increment').on('click', function () {
             let quantity = parseInt($('#quantity').val());
             $('#quantity').val(quantity + 1);
             updateTotalPrice();
         });
 
         // Xử lý nút giảm số lượng
-        $('.decrement').on('click', function() {
+        $('.decrement').on('click', function () {
             let quantity = parseInt($('#quantity').val());
             if (quantity > 1) {
                 $('#quantity').val(quantity - 1);
@@ -97,7 +105,7 @@
         });
 
         // Khi chọn phương thức thanh toán MoMo
-        $('#payment_method').on('change', function() {
+        $('#payment_method').on('change', function () {
             const paymentMethod = $(this).val();
             if (paymentMethod === 'card') {
                 // Hiển thị mã QR
@@ -108,42 +116,39 @@
                 $('#momoQRCode').hide();
             }
         });
+
         function generateQRCode() {
-    const username = $("input[name='username']").val();
+            const username = $("input[name='username']").val();
+            const address = $("input[name='address']").val();
+            const phone = $("input[name='phone']").val();
+            const email = $("input[name='email']").val();
+            const quantity = $('#quantity').val();
 
-    if (!username) {
-        alert('Vui lòng nhập họ tên');
-        return;
-    }
+            if (!username || !address || !phone || !email) {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return;
+            }
 
-    // Chuẩn bị dữ liệu thanh toán
-    const paymentData = {
-        orderId: "{{ $order->id }}",
-        amount: "{{ $order->total }}",
-        productName: "{{ $order->product->name }}",
-        user: username
-    };
+            // Chuẩn bị dữ liệu thanh toán
+            const paymentData = `Mã đơn hàng: {{ $order->id }}\n` +
+                `Sản phẩm: {{ $order->product->name }}\n` +
+                `Số lượng: ${quantity}\n` +
+                `Tổng tiền: {{ number_format($order->total, 0, ',', '.') }} VND\n` +
+                `Người nhận: ${username}\n` +
+                `Địa chỉ: ${address}\n` +
+                `SĐT: ${phone}\n` +
+                `Email: ${email}`;
 
-    console.log('Dữ liệu thanh toán trước mã hóa:', paymentData);
+            // Tạo mã QR
+            const qr = qrcode(0, 'L');
+            qr.addData(paymentData);
+            qr.make();
 
-    // Chuyển đối tượng thành chuỗi JSON
-    const qrCodeData = JSON.stringify(paymentData);
-
-    console.log('Dữ liệu mã QR:', qrCodeData);
-
-    // Tạo mã QR
-    QRCode.toCanvas(document.getElementById('qrCodeContainer'), qrCodeData, function(error) {
-        if (error) {
-            console.error('Lỗi tạo mã QR:', error);
-            alert('Không thể tạo mã QR. Vui lòng thử lại!');
-        } else {
-            console.log('Mã QR đã được tạo thành công!');
+            // Hiển thị mã QR
+            $('#qrCodeContainer').html(qr.createImgTag());
         }
     });
-}
-
-
-    });
 </script>
+
 
 @endsection

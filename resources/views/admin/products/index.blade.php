@@ -1,37 +1,35 @@
 @extends('layouts.admin')
 <style>
     /* Đặt tiêu đề bảng cố định ở trên cùng */
-.table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #f8f9fa; /* Màu nền của tiêu đề */
-    z-index: 1;
-}
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa; /* Màu nền của tiêu đề */
+        z-index: 1;
+    }
 
-/* Tạo vùng cuộn cho bảng */
-.table-wrapper {
-    max-height: 500px; /* Đặt chiều cao tối đa cho vùng cuộn */
-    overflow-y: auto; /* Hiển thị thanh cuộn dọc khi có nhiều hơn 10 sản phẩm */
-    display: block;
-}
+    /* Tạo vùng cuộn cho bảng */
+    .table-wrapper {
+        max-height: 500px; /* Đặt chiều cao tối đa cho vùng cuộn */
+        overflow-y: auto; /* Hiển thị thanh cuộn dọc khi có nhiều hơn 10 sản phẩm */
+        display: block;
+    }
 
-.table {
-    width: 100%;
-    table-layout: fixed;
-}
+    .table {
+        width: 100%;
+        table-layout: fixed;
+    }
 
-/* Đặt chiều rộng cho các cột */
-.table th:nth-child(7), .table td:nth-child(7) { /* Cột 'Thương hiệu' */
-    width: 10%; /* Chiều rộng nhỏ cho cột 'Thương hiệu' */
-}
+    /* Đặt chiều rộng cho các cột */
+    .table th:nth-child(7), .table td:nth-child(7) { /* Cột 'Thương hiệu' */
+        width: 10%; /* Chiều rộng nhỏ cho cột 'Thương hiệu' */
+    }
 
-.table th:nth-child(8), .table td:nth-child(8) { /* Cột 'Danh mục' */
-    width: 10%; /* Chiều rộng nhỏ cho cột 'Danh mục' */
-}
-
-
-
+    .table th:nth-child(8), .table td:nth-child(8) { /* Cột 'Danh mục' */
+        width: 10%; /* Chiều rộng nhỏ cho cột 'Danh mục' */
+    }
 </style>
+
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -42,7 +40,7 @@
             
             <!-- Thanh tìm kiếm -->
             <form action="{{ route('admin.products.search') }}" method="GET" class="d-flex">
-                <input type="text" name="query" class="form-control me-2" placeholder="Tìm kiếm sản phẩm..." required>
+                <input type="text" name="query" class="form-control me-2" placeholder="Tìm kiếm sản phẩm..." value="{{ request()->query('query') }}">
                 <button type="submit" class="btn btn-primary">Tìm</button>
             </form>
         </div>
@@ -77,10 +75,12 @@
                             <td>{{ $product->name }}</td>
                             <td>{{ number_format($product->new_price, 0, ',', '.') }}.000đ</td>
                             <td>{{ number_format($product->old_price, 0, ',', '.') }}.000đ</td>
-                            <td> <img src="{{ asset('images/' . $product->image) }}" style="width: 100px;" alt="{{ $product->name }}"></td>
+<td> 
+                                <img src="{{ asset('images/' . $product->image) }}" style="width: 100px;" alt="{{ $product->name }}">
+                            </td>
                             <td>{{ $product->description }}</td>
-                            <td>{{ $product->brand_id }}</td>
-                            <td>{{ $product->category_id }}</td>
+                            <td>{{ $product->brand->name ?? 'Không có thương hiệu' }}</td>
+                            <td>{{ $product->category->name ?? 'Không có danh mục' }}</td>
                             <td>{{ $product->sold }}</td>
                             <td>
                                 <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning">Sửa</a>

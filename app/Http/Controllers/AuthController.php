@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Category;
+use App\Models\Product;
 
 class AuthController extends Controller
 {
@@ -16,22 +22,31 @@ class AuthController extends Controller
 
     public function login(Request $request)
 {
-    $credentials = $request->only('username', 'password');
-    
+    $credentials = $request->validate([
+        'username' => 'required',
+        'password' => 'required',
+    ], [
+        'username.required' => 'Vui lòng nhập tên đăng nhập',
+        'password.required' => 'Vui lòng nhập mật khẩu',
+    ]);
+
     if (Auth::attempt($credentials)) {
-        $user = Auth::user();
-        
-        // Kiểm tra nếu user là admin
-        if ($user->role == 1) {
-            return redirect()->route('admin.dashboard'); // Chuyển hướng tới trang quản trị
-        } else {
-            return redirect()->route('customer.home'); // Chuyển hướng tới trang khách hàng
+        $request->session()->regenerate();
+
+        // Kiểm tra role và chuyển hướng
+        $user = Auth::user(); // Lấy thông tin người dùng đã đăng nhập
+
+        if ($user->role === 1) { // Kiểm tra nếu là admin
+            return redirect()->intended('admin/dashboard');
         }
+
+        // Nếu không phải admin, chuyển hướng về trang khách hàng
+        return redirect()->route('customer.home');
     }
 
-    return redirect()->route('login')->withErrors([
-        'login_failed' => 'Thông tin đăng nhập không đúng hoặc tài khoản không tồn tại. Vui lòng đăng ký tài khoản.',
-    ]);
+    return back()->withErrors([
+        'username' => 'Tên đăng nhập hoặc mật khẩu không chính xác.',
+    ])->withInput($request->only('username'));
 }
 
 
@@ -94,7 +109,7 @@ public function register(Request $request)
 {
     $request->validate([
         'username' => 'required|unique:users', // Kiểm tra username
-        'email' => 'required|email|unique:users',
+'email' => 'required|email|unique:users',
         'password' => 'required|confirmed|min:6',
     ]);
 
@@ -113,13 +128,53 @@ public function showRegisterForm()
     return view('auth.register');
 }
 
+public function showForgotPasswordForm()
+{
+    return view('auth.forgot-password');
 }
 
-  
-        
+public function sendResetLink(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users',
+    ], [
+        'email.required' => 'Vui lòng nhập email',
+        'email.email' => 'Email không hợp lệ',
+        'email.exists' => 'Email không tồn tại trong hệ thống'
+    ]);
 
-  
- 
-    
+    // Chuyển thẳng đến trang reset password
+    return redirect()->route('password.reset')
+        ->with('email', $request->email)
+        ->with('info', 'Vui lòng nhập mật khẩu mới của bạn.');
+}
 
+public function showResetPasswordForm()
+{
+    return view('auth.reset-password');
+}
 
+public function resetPassword(Request $request)
+{
+    $request->validate([
+        'username' => 'required|exists:users,username',
+        'password' => 'required|min:6|confirmed',
+    ], [
+        'username.required' => 'Vui lòng nhập tên đăng nhập',
+        'username.exists' => 'Tên đăng nhập không tồn tại trong hệ thống',
+        'password.required' => 'Vui lòng nhập mật khẩu mới',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
+        'password.confirmed' => 'Xác nhận mật khẩu không khớp'
+    ]);
+
+    // Cập nhật mật khẩu mới
+    $user = User::where('username', $request->username)->first();
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    // Redirect về route home
+    return redirect()->route('customer.home')
+        ->with('success', 'Mật khẩu đã được cập nhật thành công!');
+}
+
+}

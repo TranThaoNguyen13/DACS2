@@ -13,9 +13,19 @@
 </style>
 @section('content')
 <div class="container">
-    <h1>Quản lý người dùng</h1>
-    <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Thêm người dùng mới</a>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Quản Lý Người Dùng</h1>
+        <div class="d-flex">
+            <!-- Nút thêm danh mục -->
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Thêm người dùng mới</a>
+            
+            <!-- Thanh tìm kiếm -->
+            <form action="{{ route('admin.users.index') }}" method="GET" class="d-flex ms-3">
+                <input type="text" name="query" class="form-control me-2" placeholder="Tìm kiếm tài khoản..." value="{{ request('query') }}">
+                <button type="submit" class="btn btn-primary">Tìm</button>
+            </form>
+        </div>
+    </div>
     <div class="table-container mt-3" style="max-height: 500px; overflow-y: auto;">
     <table class="table table-striped">
         <thead>

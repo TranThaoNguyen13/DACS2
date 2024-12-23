@@ -73,6 +73,10 @@ class OrderController extends Controller
 
     public function checkout(Order $order)
     {
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước khi thêm sản phẩm vào giỏ hàng.');
+        }
         if ($order->status !== 'Chờ xác nhận') {
             return redirect()->route('order.success')->with('error', 'Đơn hàng đã được thanh toán.');
         }
@@ -157,6 +161,10 @@ public function processPayment(Request $request, Order $order)
 
 public function store(Request $request)
     {
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước khi mua hàng.');
+        }
         // Kiểm tra nếu người dùng chưa đăng nhập
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước khi đặt hàng.');
@@ -252,6 +260,10 @@ public function showOrderHistory(Request $request)
 
 public function buyNow(Request $request)
 {
+    // Kiểm tra nếu người dùng chưa đăng nhập
+    if (!auth()->check()) {
+        return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước khi thêm sản phẩm vào giỏ hàng.');
+    }
     $productId = $request->input('product_id');
     $quantity = $request->input('quantity', 1); // Mặc định là 1 nếu không có quantity
 

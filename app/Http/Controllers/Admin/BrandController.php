@@ -8,11 +8,23 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
-    public function index()
-    {
+    public function index(Request $request)
+{
+    // Lấy từ khóa tìm kiếm từ form
+    $query = $request->input('query');
+    
+    // Kiểm tra xem có từ khóa tìm kiếm không
+    if ($query) {
+        // Tìm kiếm thương hiệu theo tên
+        $brands = Brand::where('name', 'LIKE', "%{$query}%")->get();
+    } else {
+        // Nếu không có tìm kiếm, hiển thị tất cả
         $brands = Brand::all();
-        return view('admin.brands.index', compact('brands'));
     }
+
+    return view('admin.brands.index', compact('brands'));
+}
+
 
     public function create()
     {
@@ -79,7 +91,7 @@ class BrandController extends Controller
     public function destroy($id)
     {
         $brand = Brand::findOrFail($id);
-        $brand->delete();
+$brand->delete();
 
         return redirect()->route('admin.brands.index')->with('success', 'Thương hiệu đã được xóa.');
     }

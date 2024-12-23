@@ -1,8 +1,28 @@
 @extends('layouts.admin')
 
 @section('content')
+@section('content')
+<div class="container">
+    @if ($errors->any())  <!-- Kiểm tra nếu có lỗi -->
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)  <!-- Lặp qua các lỗi -->
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    
 <div class="container">
     <h2>Thêm Nhân Viên</h2>
+    <!-- Kiểm tra và hiển thị thông báo thành công -->
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <form action="{{ route('admin.nhanvien.store') }}" method="POST">
         @csrf
         <div class="mb-3">
@@ -37,8 +57,9 @@
         <button type="submit" class="btn btn-success">Thêm Nhân Viên</button>
     </form>
 </div>
+
 @if ($errors->any())
-    <div class="alert alert-danger">
+    <div class="alert alert-danger mt-3">
         <ul>
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -46,6 +67,4 @@
         </ul>
     </div>
 @endif
-
-
 @endsection

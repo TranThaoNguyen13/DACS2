@@ -86,6 +86,11 @@
             @csrf
             <input type="text" name="username" placeholder="Tên đăng nhập" required>
             <input type="password" name="password" placeholder="Mật khẩu" required>
+            <div class="form-group">
+                <a href="{{ route('password.request') }}">
+                    Quên mật khẩu?
+                </a>
+            </div>
             <button type="submit">Đăng nhập</button>
         </form>
         <div class="additional-links">

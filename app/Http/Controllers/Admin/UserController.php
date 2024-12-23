@@ -9,11 +9,25 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::all();
-        return view('admin.users.index', compact('users'));
+    public function index(Request $request)
+{
+    // Lấy giá trị tìm kiếm từ form
+    $query = $request->get('query', '');
+
+    // Kiểm tra nếu có giá trị tìm kiếm, thực hiện truy vấn tìm kiếm
+    if ($query) {
+        // Tìm kiếm người dùng theo tên hoặc email
+        $users = User::where('username', 'like', '%' . $query . '%')
+                     ->orWhere('email', 'like', '%' . $query . '%')
+                     ->paginate(10); // Phân trang 10 người dùng mỗi trang
+    } else {
+        $users = User::paginate(10); // Nếu không có tìm kiếm, trả về tất cả người dùng
     }
+
+    // Trả về view với các người dùng và tham số tìm kiếm
+    return view('admin.users.index', compact('users', 'query'));
+}
+
 
     public function create()
     {
@@ -68,7 +82,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
+$user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'Người dùng đã được xóa.');
     }

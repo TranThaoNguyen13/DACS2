@@ -51,4 +51,20 @@ class OrderController extends Controller
 
         return redirect()->route('admin.orders.index')->with('success', 'Đơn hàng đã được xóa!');
     }
+    public function search(Request $request)
+{
+    // Lấy từ khóa tìm kiếm
+    $query = $request->input('query');
+    
+    // Tìm kiếm đơn hàng theo các trường 'username', 'status', 'user_id'
+    $orders = Order::where('username', 'like', '%' . $query . '%')
+                    ->orWhere('status', 'like', '%' . $query . '%')
+                    ->orWhere('user_id', 'like', '%' . $query . '%')
+                    ->get();
+    
+    // Trả về view với kết quả tìm kiếm
+    return view('admin.orders.index', compact('orders', 'query'));
+}
+
+    
 }
