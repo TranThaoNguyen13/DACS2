@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::all();
+        $query = $request->input('query');
+        if ($query) {
+            // Tìm kiếm thương hiệu theo tên
+            $categories = Category::where('name', 'LIKE', "%{$query}%")->get();
+        } else {
+            // Nếu không có tìm kiếm, hiển thị tất cả
+            $categories = Category::all();
+        }
         return view('admin.categories.index', compact('categories'));
     }
 

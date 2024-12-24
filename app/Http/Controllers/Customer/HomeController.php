@@ -7,34 +7,73 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
-
-
-
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
+    public function __construct()
+    {
+        // Share categories và brands với tất cả các views
+        $categories = Category::all();
+        $brands = Brand::all();
+        view()->share([
+            'categories' => $categories,
+            'brands' => $brands
+        ]);
+    }
+
     public function index()
     {
-        $categories = Category::all(); // Lấy tất cả danh mục
-        $brands = Brand::all(); 
+        $products = Product::paginate(12);
+        $bestSellers = Product::orderBy('sold', 'desc')->take(8)->get();
+        $newProducts = Product::latest()->take(8)->get();
         
-        $bestSellers = Product::orderBy('sold', 'desc')->limit(10)->get();
-        return view('customer.home', compact('categories', 'brands', 'bestSellers')); // Truyền biến vào view
+        return view('customer.home', compact('products', 'bestSellers', 'newProducts'));
     }
+
     public function search(Request $request)
-{
-    $search = $request->input('search');
+    {
+        $query = $request->input('search');
+        
+        // Tìm kiếm sản phẩm
+        $products = Product::where(function($q) use ($query) {
+            $q->where('name', 'LIKE', "%{$query}%")
+              ->orWhere('description', 'LIKE', "%{$query}%")
+              ->orWhereHas('category', function($q) use ($query) {
+                  $q->where('name', 'LIKE', "%{$query}%");
+              });
+        })->paginate(12);
 
-    // Tìm kiếm trong các trường dữ liệu cần tìm
-    // Ví dụ: tìm trong bảng `products`, bạn có thể tìm theo tên sản phẩm hoặc mô tả sản phẩm.
-    $products = Product::where('name', 'like', '%'.$search.'%')
-                       ->orWhere('description', 'like', '%'.$search.'%')
-                       ->get();
+        return view('products.index', [
+            'products' => $products,
+            'category' => (object)['name' => 'Kết quả tìm kiếm: ' . $query],
+            'query' => $query
+        ]);
+    }
 
-    // Trả về kết quả tìm kiếm, ví dụ là các sản phẩm
-    return view('customer.home', compact('products', 'search'));
+    public function getProductsByCategory($categoryId)
+    {
+        $category = Category::findOrFail($categoryId);
+        $products = $category->products;
+        
+        // Kiểm tra nếu không có sản phẩm trong danh mục
+        if ($products->isEmpty()) {
+            $products = null;
+        }
+        
+        return view('customer.products', compact('products', 'category'));
+    }
+
+    public function getProductsByBrand($brandId)
+    {
+        $brand = Brand::findOrFail($brandId);
+        $products = Product::where('brand_id', $brandId)->get();
+        
+        // Kiểm tra nếu không có sản phẩm trong thương hiệu
+        if ($products->isEmpty()) {
+            $products = null;
+        }
+        
+        return view('customer.products', compact('products', 'brand'));
+    }
 }
-
-}
-
-    

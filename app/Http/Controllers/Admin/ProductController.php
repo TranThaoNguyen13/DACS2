@@ -10,10 +10,18 @@ use App\Models\Brand;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
-    $products = Product::all(); // Đảm bảo có bản ghi trong bảng products
+    $query = $request->input('query'); // Đảm bảo có bản ghi trong bảng products
+    if ($query) {
+        // Tìm kiếm thương hiệu theo tên
+        $products = Product::where('name', 'LIKE', "%{$query}%")->get();
+    } else {
+        // Nếu không có tìm kiếm, hiển thị tất cả
+        $products = Product::all();
+    }
     return view('admin.products.index', compact('products'));
+
 }
    
     

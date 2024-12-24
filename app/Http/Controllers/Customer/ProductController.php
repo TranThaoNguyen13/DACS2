@@ -98,7 +98,10 @@ public function showByBrand($brandId)
 public function addComment(Request $request, $productId)
 {
     $request->validate([
-        'content' => 'required|max:500',
+        'content' => 'required|max:500|min:5',
+    ], [
+        'content.required' => 'Vui lòng nhập...',
+        'content.min' => 'Vui lòng nhập 5 kí tự'
     ]);
 
     Comment::create([

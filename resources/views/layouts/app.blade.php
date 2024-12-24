@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>@yield('title')</title>
      <!-- Bootstrap CSS -->
@@ -43,7 +44,7 @@
             </div>
             <div class="col-md-5">
             <form action="{{ route('home.search') }}" method="GET" class="d-flex">
-    <input type="search" id="search-bar" name="search" class="form-control me-2" placeholder="Tìm kiếm...">
+    <input type="search" id="search-bar" name="search" class="form-control me-2" placeholder="Tìm kiếm sản phẩm bạn cần...">
     <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
 </form>
 
@@ -75,7 +76,7 @@
                             <li class="nav-item"><a href="{{ route('hot_deals') }}" class="nav-link">HOT DEALS</a></li>
                             <li class="nav-item"><a href="#thuong-hieu" class="nav-link">THƯƠNG HIỆU</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">HÀNG MỚI VỀ</a></li>
-                            <li class="nav-item"><a href="#" class="nav-link">BÁN CHẠY</a></li>
+                            <li class="nav-item"><a href="#ban-chay" class="nav-link">BÁN CHẠY</a></li>
                             <li class="nav-item"><a href="#" class="nav-link">CLINIC & SPA</a></li>
                         </ul>
                     </div>

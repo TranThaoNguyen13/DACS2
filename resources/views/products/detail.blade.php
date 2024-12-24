@@ -1,22 +1,14 @@
 @extends('layouts.app')
-
-@section('content')
 <link rel="stylesheet" href="{{ asset('css/detail.css') }}">
 <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
-
-<div class="container" id="chitiet">
+@section('content')
+<div class="container">
     <div class="row">
         <div class="col-md-6">
-            <div class="position-relative">
-                <p class="text-danger discount-tag position-absolute" style="top: 10px; left: 10px;">
-                    -{{ round((($product->old_price - $product->new_price) / $product->old_price) * 100) }}%
-                </p>
-                <img src="{{ asset('images/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
-            </div>
+            <img src="{{ asset('images/' . $product->image) }}" alt="{{ $product->name }}" class="img-fluid">
         </div>
         <div class="col-md-6">
-            <br><br>
-            <h2>{{ $product->name }}</h2><br><br>
+        <h2>{{ $product->name }}</h2><br><br>
             <p class="text-danger" style="font-size: 25px;">{{ number_format($product->new_price, 0, ',', '.') }}.000đ</p>
             <p class="text-muted" style="text-decoration: line-through; font-size: 20px;">{{ number_format($product->old_price, 0, ',', '.') }}.000đ</p>
             <div class="stars">
@@ -25,28 +17,33 @@
                 @endfor
             </div><br>
             <p style="font-size: 20px;">Mô tả: {!! $product->description !!}</p>
-
-            <div class="quantity-control d-flex align-items-center mt-3">
-                <button class="btn btn-secondary btn-sm decrement">-</button>
-                <input type="text" class="form-control text-center mx-2 quantity" value="1" style="width: 50px;" readonly>
-                <button class="btn btn-secondary btn-sm increment">+</button>
+            <div class="quantity-controls">
+                <button id="decrease" class="btn btn-secondary">-</button>
+                <input id="quantity" type="number" value="1" min="1" class="form-control d-inline-block" style="width: 60px;">
+                <button id="increase" class="btn btn-secondary">+</button>
             </div>
+            <div class="d-flex">
+    <!-- Nút Thêm vào giỏ hàng -->
+    <button id="add-to-cart" class="btn btn-primary mt-3 mr-2">Thêm vào giỏ hàng</button>
+    
+    <!-- Form Mua ngay -->
+    <form action="{{ route('order.buy') }}" method="POST" class=" btn btn-primary mt-3 mr-2mt-3 mr-2">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
+        <input type="hidden" name="quantity" value="1"> <!-- Nếu có thông tin số lượng -->
+        <button type="submit" class="btn btn-primary" >Mua ngay</button>
+    </form>
+</div>
 
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                            <button class="btn btn-primary add-to-cart" data-id="{{ $product->id }}">Giỏ hàng</button>
-                            <form action="{{ route('order.buy') }}" method="POST">
-                                @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="hidden" name="quantity" value="1"> <!-- Nếu có thông tin số lượng -->
-                                    <button type="submit" class="btn btn-primary">Mua hàng</button>
-                            </form>
-                        </div><br><br>
-    <a onclick="window.history.back()" style="color: blue; font-size: 25px;"><---</a>
-
-
+                            <div>
+            <button onclick="window.history.back()" class="btn btn-primary mt-3">Quay lại trang chủ</button>
             </div>
         </div>
-        <div class="mt-5">
+       
+
+    </div>
+</div>
+<div class="mt-5">
     <h4>Bình luận</h4>
 
     <!-- Hiển thị danh sách bình luận -->
@@ -162,54 +159,59 @@
     </div>
 </div>
 </div>
-
 @endsection
-
-@section('scripts')
-
 <script>
-$(document).ready(function() {
-    // Xử lý sự kiện tăng giảm số lượng
-    $('.increment').on('click', function() {
-        let quantityInput = $(this).closest('.quantity-control').find('.quantity');
-        let currentQuantity = parseInt(quantityInput.val());
-        quantityInput.val(currentQuantity + 1);
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+    const decreaseButton = document.getElementById('decrease');
+    const increaseButton = document.getElementById('increase');
+    const quantityInput = document.getElementById('quantity');
+    const addToCartButton = document.getElementById('add-to-cart');
 
-    $('.decrement').on('click', function() {
-        let quantityInput = $(this).closest('.quantity-control').find('.quantity');
-        let currentQuantity = parseInt(quantityInput.val());
-        if (currentQuantity > 1) {
-            quantityInput.val(currentQuantity - 1);
+    // Xử lý nút tăng/giảm số lượng
+    decreaseButton.addEventListener('click', () => {
+        let quantity = parseInt(quantityInput.value);
+        if (quantity > 1) {
+            quantityInput.value = quantity - 1;
         }
     });
 
-    // Xử lý sự kiện thêm vào giỏ hàng
-    $('.add-to-cart').on('click', function() {
-        let productId = $(this).data('id');
-        let quantity = $(this).closest('.quantity-control').find('.quantity').val();
+    increaseButton.addEventListener('click', () => {
+        let quantity = parseInt(quantityInput.value);
+        quantityInput.value = quantity + 1;
+    });
 
-        $.ajax({
-            url: "{{ route('add.to.cart') }}",
-            method: "POST",
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                quantity: quantity
-            },
-            success: function(response) {
-                alert(response.success);
-                $('#cart-count').text(response.cart_count);
-            },
-            error: function(xhr) {
-                console.error(xhr);
-                alert('Có lỗi xảy ra khi thêm vào giỏ hàng.');
+    // Xử lý thêm vào giỏ hàng
+    addToCartButton.addEventListener('click', async () => {
+        const quantity = parseInt(quantityInput.value);
+
+        try {
+            const response = await fetch('{{ route("add.to.cart") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({
+                    product_id: {{ $product->id }},
+                    quantity: quantity,
+                }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.success);
+                } else if (result.error) {
+                    alert(result.error);
+                }
+            } else {
+                alert('Đã xảy ra lỗi khi thêm vào giỏ hàng.');
             }
-        });
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert('Đã xảy ra lỗi không xác định.');
+        }
     });
 });
 
-
 </script>
-
-@endsection

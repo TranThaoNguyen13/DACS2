@@ -382,3 +382,12 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 
 Route::get('/reset-password', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+Route::get('/order/{id}/details', [OrderController::class, 'details'])->name('order.details');
+
+
+use App\Http\Controllers\Admin\StoreController;
+
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('stores', StoreController::class);
+});

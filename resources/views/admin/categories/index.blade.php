@@ -13,9 +13,19 @@
 </style>
 @section('content')
 <div class="container">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Quản lý danh mục</h1>
-    <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">Thêm danh mục mới</a>
-
+    <div class="d-flex">
+            <!-- Nút thêm sản phẩm -->
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">Thêm danh mục mới</a>
+            
+            <!-- Thanh tìm kiếm -->
+            <form action="{{ route('admin.categories.index') }}" method="GET" class="d-flex">
+                <input type="text" name="query" class="form-control me-2" placeholder="Tìm kiếm thương hiệu..." value="{{ request('query') }}">
+                <button type="submit" class="btn btn-primary">Tìm</button>
+            </form>
+        </div>
+</div>
     <div class="table-container mt-3" style="max-height: 500px; overflow-y: auto;">
         <table class="table table-striped">
             <thead>

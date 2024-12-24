@@ -39,7 +39,7 @@
             <a href="{{ route('admin.products.create') }}" class="btn btn-success me-2">Thêm Sản Phẩm Mới</a>
             
             <!-- Thanh tìm kiếm -->
-            <form action="{{ route('admin.products.search') }}" method="GET" class="d-flex">
+            <form action="{{ route('admin.products.index') }}" method="GET" class="d-flex">
                 <input type="text" name="query" class="form-control me-2" placeholder="Tìm kiếm sản phẩm..." value="{{ request()->query('query') }}">
                 <button type="submit" class="btn btn-primary">Tìm</button>
             </form>

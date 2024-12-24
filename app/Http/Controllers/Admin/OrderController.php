@@ -9,10 +9,17 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     // Hiển thị danh sách đơn hàng
-    public function index()
+    public function index(Request $request)
     {
+        $query = $request->input('query');
         // Lấy tất cả đơn hàng từ cơ sở dữ liệu
-        $orders = Order::all();
+        if ($query) {
+            // Tìm kiếm thương hiệu theo tên
+            $orders = Order::where('username', 'LIKE', "%{$query}%")->get();
+        } else {
+            // Nếu không có tìm kiếm, hiển thị tất cả
+            $orders = Order::all();
+        }
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -65,6 +72,13 @@ class OrderController extends Controller
     // Trả về view với kết quả tìm kiếm
     return view('admin.orders.index', compact('orders', 'query'));
 }
+public function show($id)
+    {
+        // Tìm đơn hàng theo id
+        $order = Order::findOrFail($id);
 
+        // Trả về view hiển thị chi tiết đơn hàng
+        return view('admin.orders.show', compact('order'));
+    }
     
 }

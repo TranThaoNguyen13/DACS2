@@ -6,9 +6,25 @@
 @section('title', 'Lịch Sử Mua Hàng')
 
 @section('content')
-<div class="container">
-    <h2>Lịch Sử Mua Hàng</h2>
+<style>
+    .table-wrapper {
+    max-height: 400px; /* Chiều cao tối đa cho phần nội dung bảng */
+    overflow-y: auto; /* Kích hoạt cuộn dọc */
+    border: 1px solid #ddd; /* Thêm đường viền cho bảng */
+}
 
+.table thead th {
+    position: sticky;
+    top: 0; /* Cố định tiêu đề ở trên cùng */
+    background-color: #f8f9fa; /* Màu nền cho tiêu đề */
+    z-index: 1; /* Đảm bảo tiêu đề luôn nằm trên các dòng dữ liệu */
+}
+
+</style>
+<div class="container">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Lịch Sử Mua Hàng</h2>
+ 
     <!-- Thanh menu -->
     <ul class="nav nav-tabs">
         <li class="nav-item">
@@ -37,44 +53,45 @@
         </li>
     </ul>
 
- 
-
-    <!-- Danh sách đơn hàng -->
-    <table class="table mt-3">
-        <thead>
-            <tr>
-                <th>Mã Đơn Hàng</th>
-                <th>Ngày Mua</th>
-                <th>Tổng Tiền</th>
-                <th>Trạng Thái</th>
-                <th>Họ và tên</th>
-                <th>Địa chỉ</th>
-                <th>Phương thức thanh toán</th>
-                <th>SĐT</th>
-                <th>Email</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($orders as $order)
+    <!-- Bảng lịch sử đơn hàng -->
+    <div class="table-wrapper mt-3">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>{{ $order->id }}</td>
-                    <td>{{ $order->created_at }}</td>
-                    <td>{{ number_format($order->total, 0, ',', '.') }}.000đ</td>
-                    <td>{{ $order->status }}</td>
-                    <td>{{ $order->username }}</td>
-                    <td>{{ $order->address }}</td>
-                    <td>{{ $order->payment_method }}</td>
-                    <td>{{ $order->phone }}</td>
-                    <td>{{ $order->email }}</td>
-                    <td>
-                    <td>
-    @if($order->status == 'Chờ xác nhận') <!-- Trạng thái có thể hủy -->
+                    <th>Mã Đơn Hàng</th>
+                    <th>Ngày Mua</th>
+                    <th>Tổng Tiền</th>
+                    <th>Trạng Thái</th>
+                    <th>Họ và tên</th>
+                    <th>Địa chỉ</th>
+                    <th>Phương thức thanh toán</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>ID sản phẩm</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($orders as $order)
+                    <tr>
+                        <td>{{ $order->id }}</td>
+                        <td>{{ $order->created_at }}</td>
+                        <td>{{ number_format($order->total, 0, ',', '.') }}.000đ</td>
+                        <td>{{ $order->status }}</td>
+                        <td>{{ $order->username }}</td>
+                        <td>{{ $order->address }}</td>
+                        <td>{{ $order->payment_method }}</td>
+                        <td>{{ $order->phone }}</td>
+                        <td>{{ $order->email }}</td>
+                        <td>{{ $order->product_id }}</td>
+                        <td>
+    <a href="{{ route('order.details', $order->id) }}" class="btn btn-info">Xem Chi Tiết</a>
+    @if($order->status == 'Chờ xác nhận')
         <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?');">
             @csrf
             <button type="submit" class="btn btn-danger">Hủy Đơn Hàng</button>
         </form>
-    @elseif($order->status == 'Đã nhận') <!-- Trạng thái đã nhận, thay đổi nút -->
+    @elseif($order->status == 'Đã nhận')
         <form action="{{ route('order.return', $order->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn trả đơn hàng này?');">
             @csrf
             <button type="submit" class="btn btn-warning">Trả Đơn/Hàng Hoàn</button>
@@ -84,14 +101,18 @@
     @endif
 </td>
 
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="10" class="text-center">Không có đơn hàng nào.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+                        
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="10" class="text-center">Không có đơn hàng nào.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Nút quay lại -->
+    <button onclick="window.location='{{ route('customer.home') }}'" class="btn btn-primary mt-3">Quay lại Trang Chủ</button>
 </div>
-<button onclick="window.location='{{ route('customer.home') }}'" class="btn btn-primary">Quay lại Trang Chủ</button>
 @endsection

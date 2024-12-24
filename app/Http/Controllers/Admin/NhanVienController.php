@@ -8,9 +8,16 @@ use App\Models\NhanVien;
 
 class NhanVienController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $nhanvien = NhanVien::all(); // Lấy tất cả nhân viên từ CSDL
+        $query = $request->input('query');
+        if ($query) {
+            // Tìm kiếm thương hiệu theo tên
+            $nhanvien = Nhanvien::where('name', 'LIKE', "%{$query}%")->get();
+        } else {
+            // Nếu không có tìm kiếm, hiển thị tất cả
+            $nhanvien = NhanVien::all();
+        } // Lấy tất cả nhân viên từ CSDL
         return view('admin.nhanvien.index', compact('nhanvien'));
     }
 

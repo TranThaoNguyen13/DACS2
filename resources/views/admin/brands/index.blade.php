@@ -62,7 +62,7 @@
                 <tr>
                     <td>{{ $brand->id }}</td>
                     <td>{{ $brand->name }}</td>
-                    <td>{{ $brand->image }}</td>
+                    <td><img src="{{ asset('images/' . $brand->image) }}" style="width: 100px;" alt="{{ $brand->name }}"></td>
                     <td>
                         <a href="{{ route('admin.brands.edit', $brand->id) }}" class="btn btn-warning btn-sm">Sửa</a>
                         <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" style="display:inline-block;">

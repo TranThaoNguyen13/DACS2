@@ -76,29 +76,29 @@
     <h1>Danh mục</h1>
     <div id="categoryCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
         <div class="carousel-inner">
-            @if($categories->isEmpty())
-                <p>Không có danh mục nào.</p>
-            @else
-                @foreach ($categories->chunk(5) as $chunkIndex => $categoryChunk) <!-- Thay đổi từ chunk(4) thành chunk(5) -->
-                    <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
-                        <div class="row g-0">
-                            @foreach ($categoryChunk as $index => $category)
-                                <div class="col-md-2"> <!-- Thay đổi từ col-md-3 thành col-md-2 -->
-                                    <a href="{{ route('products.index.by.category', ['categoryId' => $category->id]) }}">
-                                        <div class="card category-card category-{{ ($index % 8) + 1 }}">
-                                            <img src="{{ asset('images/' . $category->image) }}" class="card-img-top" alt="{{ $category->name }}">
-                                            <div class="card-body">
-                                                <h5 class="card-title">{{ $category->name }}</h5>
-                                            </div>
-                                        </div>
-                                    </a>
+        @if(isset($categories) && !$categories->isEmpty())
+    @foreach ($categories->chunk(5) as $chunkIndex => $categoryChunk)
+        <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
+            <div class="row g-0">
+                @foreach ($categoryChunk as $index => $category)
+                    <div class="col-md-2">
+                        <a href="{{ route('products.index.by.category', ['categoryId' => $category->id]) }}">
+                            <div class="card category-card category-{{ ($index % 8) + 1 }}">
+                                <img src="{{ asset('images/' . $category->image) }}" class="card-img-top" alt="{{ $category->name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $category->name }}</h5>
                                 </div>
-                            @endforeach
-                        </div>
+                            </div>
+                        </a>
                     </div>
                 @endforeach
-            @endif
+            </div>
         </div>
+    @endforeach
+@else
+    <p>Không có danh mục nào.</p>
+@endif
+</div>
         
 
         <!-- Nút điều hướng trái/phải -->
@@ -159,26 +159,29 @@
     <h1>Thương hiệu</h1>
     <div id="brandCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
         <div class="carousel-inner">
-            @if($brands->isEmpty())
-                <p>Không có thương hiệu nào.</p>
-            @else
-                @foreach ($brands->chunk(5) as $chunkIndex => $brandChunk)
-                    <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
-                        <div class="d-flex flex-row justify-content-center">
-                            @foreach ($brandChunk as $brand)
-                                <a href="{{ route('products.by.brand', ['brandId' => $brand->id]) }}" class="text-decoration-none">
-                                    <div class="card brand-card mx-2">
-                                        <img src="{{ asset('images/' . $brand->image) }}" class="card-img-top" alt="{{ $brand->name }}">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-center">{{ $brand->name }}</h5>
-                                        </div>
-                                    </div>
-                                </a>
-                            @endforeach
+        @if(isset($brands) && !$brands->isEmpty())
+    <div class="carousel-inner">
+        @foreach ($brands->chunk(4) as $chunkIndex => $brandChunk)
+            <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
+                <div class="row g-0">
+                    @foreach ($brandChunk as $brand)
+                        <div class="col-md-3">
+                            <div class="card brand-card">
+                                <img src="{{ asset('images/' . $brand->image) }}" class="card-img-top" alt="{{ $brand->name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $brand->name }}</h5>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
-            @endif
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
+@else
+    <p>Không có thương hiệu nào.</p>
+@endif
+
         </div>
         
         <!-- Nút điều hướng trái/phải -->
@@ -203,30 +206,27 @@
         <div id="categoryCarousel" class="carousel slide" data-ride="carousel">
         <h5>Bán chạy</h5>
             <div class="carousel-inner">
-                @foreach ($bestSellers->chunk(4) as $chunk)
-                    <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                        <div class="row">
-                            @foreach ($chunk as $product)
-                                <div class="col-md-3">
-                                    <div class="card mb-4">
-                                        <img src="{{ asset('images/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}"><br>
-                                        <div class="card-title"><b>{{ $product->name }}</b></div>
-                                        <span class="sold-count">{{ $product->sold }} đã bán</span>
-                                        <div class="card-body">
-                                            <p class="new-price">{{ $product->new_price }}.000 VNĐ</p>
-                                            <p class="old-price">{{ $product->old_price }}.000 VNĐ</p>
-                                            <div class="stars">
-                                                @for ($i = 0; $i < 5; $i++)
-                                                    <span class="fa fa-star{{ $i < $product->rating ? ' checked' : '' }}"></span>
-                                                @endfor
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+            @if(isset($bestSellers) && !$bestSellers->isEmpty())
+    <div class="carousel-inner">
+        @foreach ($bestSellers->chunk(4) as $chunk)
+            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
+                <div class="row">
+                    @foreach ($chunk as $product)
+                        <div class="col-md-3">
+                            <div class="card mb-4">
+                                <img src="{{ asset('images/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}">
+                                <div class="card-title"><b>{{ $product->name }}</b></div>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+    </div>
+@else
+    <p>Không có sản phẩm bán chạy.</p>
+@endif
+
             </div>
 
             <!-- Carousel Controls -->
@@ -242,13 +242,6 @@
     </div>
 </section>
 
-
-
-
-
-<!-- @foreach ($brands as $brand)
-    <p>{{ $brand->name }}</p>
-@endforeach -->
 @if(session('success'))
     <div class="alert alert-success mt-4">
         {{ session('success') }}

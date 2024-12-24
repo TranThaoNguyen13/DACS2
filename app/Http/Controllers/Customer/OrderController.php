@@ -256,7 +256,20 @@ public function showOrderHistory(Request $request)
     return view('order_history', compact('orders', 'status'));
 }
 
-
+public function index(Request $request){
+    $query = $request->input('query');
+        
+    if ($query) {
+        // Tìm kiếm cửa hàng theo tên hoặc địa chỉ
+        $orders = Order::where('id', 'like', "%{$query}%")
+            ->orWhere('username', 'like', "%{$query}%")
+            ->get();
+    } else {
+        // Lấy tất cả cửa hàng nếu không có truy vấn
+        $orders = Order::all();
+    }
+    return view('order_history', compact('orders'));
+}
 
 public function buyNow(Request $request)
 {
@@ -313,6 +326,14 @@ public function return($id)
     return redirect()->route('order.history')->with('error', 'Không thể trả/hoàn đơn hàng này');
 }
 
+public function details($id)
+{
+    $order = Order::with('products')->find($id); // Giả sử quan hệ products đã được định nghĩa trong model Order
+    if (!$order) {
+        return redirect()->route('order.history')->with('error', 'Đơn hàng không tồn tại.');
+    }
+    return view('order.details', compact('order'));
+}
 
 
 
